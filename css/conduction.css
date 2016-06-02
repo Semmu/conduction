@@ -1,0 +1,7 @@
+body { background: #eee; }
+
+#animation_settings { padding-right: 20px; }
+
+#animation_settings label { cursor: pointer; }
+#animation_settings input[type=checkbox] { position: relative; top: 3px; left: 5px; }
+#animation_settings hr { margin: 10px auto; border-style: dashed; }
