@@ -48,10 +48,10 @@ function randInt(max, symmetric)
 var ConductionFramework = (function()
 {
     // private vars
-    var renderer = null, // the renderer from pixi.js
-        DOM_container = null, // the container div
-        scaling_scene = null, // the pixi container/"scene" for the animation, gets resized automatically to fit the viewport
-        animation_instance = null, // the initialized and running instance
+    var container = null,
+        app = null, // the PIXI Application
+        rootScene = null, // the pixi container/"scene" for the animation, gets resized automatically to fit the viewport
+        animationInstance = null, // the initialized and running instance
 
         SCALING_GAP = 0.1; // the gap around the animation's scene
 
@@ -68,39 +68,46 @@ var ConductionFramework = (function()
         // framework init, creates renderer and appends it
         initialize: function()
         {
-            DOM_container = $('#animation_container');
+            container = $('#animation_container');
 
-            renderer = PIXI.autoDetectRenderer(DOM_container.width(), DOM_container.height(), {transparent: true});
-            scaling_scene = new PIXI.Container();
+            app = new PIXI.Application(
+                container.width(),
+                container.height(),
+                {
+                    transparent: true
+                }
+            );
 
-            DOM_container.append(renderer.view);
+            rootScene = new PIXI.Container();
+
+            container.append(app.view);
         },
 
         // function to handle viewport resize and rescale contents
         handleResize: function()
         {
-            renderer.resize(DOM_container.width(), DOM_container.height());
+            app.renderer.resize(container.width(), container.height());
 
-            scaling_scene.scale.set(1, 1);
-            scaling_scene.position.set(renderer.width / 2, renderer.height / 2);
+            rootScene.scale.set(1, 1);
+            rootScene.position.set(app.renderer.width / 2, app.renderer.height / 2);
 
-            var scale = min(renderer.width / scaling_scene.width, renderer.height / scaling_scene.height) * (1 - SCALING_GAP);
+            var scale = min(app.renderer.width / rootScene.width, app.renderer.height / rootScene.height) * (1 - SCALING_GAP);
 
-            scaling_scene.scale.set(scale, scale);
+            rootScene.scale.set(scale, scale);
         },
 
         getScene: function()
         {
-            return scaling_scene;
+            return rootScene;
         },
 
         // framework render, which calls the animation instance to do its thing
         render: function()
         {
-            if (animation_instance != null)
+            if (animationInstance != null)
             {
-                animation_instance.onRender();
-                renderer.render(scaling_scene);
+                animationInstance.onRender();
+                app.renderer.render(rootScene);
 
                 // effective method for animation timing
                 requestAnimationFrame(ConductionFramework.render);
@@ -111,15 +118,15 @@ var ConductionFramework = (function()
         setAnimation: function(animation_child)
         {
             // previous animation (if any) cleanup
-            scaling_scene.removeChildren();
-            animation_instance = animation_child;
-            animation_child.scene = this.scaling_scene;
+            rootScene.removeChildren();
+            animationInstance = animation_child;
+            animation_child.scene = this.rootScene;
             // tell the animation to init using the provided scene
-            animation_child.initialize(scaling_scene);
+            animation_child.initialize(rootScene);
 
             // basic setup
-            $('#animation_title').text(animation_instance.name);
-            $('#animation_description').text(animation_instance.description);
+            $('#animation_title').text(animationInstance.name);
+            $('#animation_description').text(animationInstance.description);
 
             // local shortcut var for the settings DOM container
             var s = $('#animation_settings');
@@ -128,7 +135,7 @@ var ConductionFramework = (function()
             s.empty();
 
             // iterate over the animation's settings to generate the UI for them
-            $.each(animation_instance.settings, function(index, setting)
+            $.each(animationInstance.settings, function(index, setting)
             {
                 s.append($('<hr>', {
                     class: 'setting_separator'
@@ -193,7 +200,7 @@ var ConductionFramework = (function()
                 {
                     // for the button it is the click event that should be listened on
                     input_element.on('click', function(event) {
-                        animation_instance.notifySettingChange(setting.name, true);
+                        animationInstance.notifySettingChange(setting.name, true);
                     });
                 }
                 else
@@ -210,7 +217,7 @@ var ConductionFramework = (function()
                             value = $(event.target).val();
 
                         // we notify the animation instance by calling its method
-                        animation_instance.notifySettingChange(setting.name, value);
+                        animationInstance.notifySettingChange(setting.name, value);
                     });
                 }
 
@@ -225,7 +232,7 @@ var ConductionFramework = (function()
 
         getAnimation: function()
         {
-            return animation_instance;
+            return animationInstance;
         }
     };
 })();
