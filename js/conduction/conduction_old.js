@@ -249,43 +249,6 @@ $(document).ready(function()
     ConductionFramework.handleResize();
 });
 
-Control = (function(){
-
-    function Control()
-    {
-        this.type = null;
-        this.name = null;
-        this.label = null;
-        this.value = null;
-        this.other = {};
-    }
-
-    function onInteract()
-    {
-        // stub method to implement
-    }
-
-    return Control;
-
-})();
-
-ButtonControl = (function(superClass){
-
-    extend(ButtonControl, superClass);
-
-    function ButtonControl()
-    {
-        this.type = properties.type;
-        this.name = properties.name;
-        this.label = properties.label;
-        this.value = properties.value;
-        this.disabled = properties.disabled;
-    }
-
-    return ButtonControl;
-
-})(Control);
-
 // the parent class for the animations
 Animation = (function() {
 
