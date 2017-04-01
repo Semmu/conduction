@@ -7,7 +7,7 @@ define(['./util'], function(util) {
 
         SCALING_GAP = 0.1;
 
-    return {
+    var functions = {
         initialize: function()
         {
             container = $('#animation_container');
@@ -23,6 +23,16 @@ define(['./util'], function(util) {
             rootScene = new PIXI.Container();
 
             container.append(pixiApp.view);
+
+            for (var i = animations.length - 1; i >= 0; i--)
+            {
+                var option = document.createElement('option');
+                option.value = animations[i].file;
+                option.innerHTML = animations[i].name;
+                document.getElementById('animation_select').appendChild(option);
+            }
+
+            functions.handleResize(); // to set the correct size
         },
 
         handleResize: function()
@@ -36,6 +46,26 @@ define(['./util'], function(util) {
 
             rootScene.scale.set(scale, scale);
         },
+
+        loadAnimation: function(name)
+        {
+            require(['conduction/animations/' + name], function(animation) {
+                animationModule = animation;
+                functions.initializeAnimation();
+            });
+
+            // to force reload the sources every time we switch animation
+            // otherwise we wouldn't have clean state for the animation_base
+            require.undef('conduction/animations/' + name);
+            require.undef('conduction/animation_base');
+        },
+
+        initializeAnimation: function()
+        {
+            $('#animation_title').text(animationModule.name);
+            $('#animation_description').text(animationModule.description);
+        }
     };
 
+    return functions;
 });

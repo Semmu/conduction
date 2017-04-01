@@ -1,5 +1,6 @@
 define({
     name: "Animation Name",
+    description: "A short description of the animation and its available settings.",
 
     onLoad: function() {
         throw new Error("missing onLoad");
