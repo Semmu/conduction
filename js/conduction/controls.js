@@ -62,7 +62,7 @@ define(['./util'], function(util) {
             control.create = function() {
                 var button = $('<button>', {
                     type: 'button',
-                    class: 'uk-button uk-width-1-1',
+                    class: 'uk-button',
                     text: label,
                     id: 'checkbox_control_' + control.counter
                 });
@@ -159,6 +159,32 @@ define(['./util'], function(util) {
                 });
 
                 return range;
+            }
+
+            return control;
+
+        },
+
+        Number: function(value, min, step, max, callback) {
+
+            var control = controls.Control();
+
+            control.type = 'number';
+            control.create = function() {
+
+                var number = $('<input>', {
+                    type: 'number',
+                    value: value,
+                    min: min,
+                    max: max,
+                    step: step
+                });
+
+                number.on('change', function() {
+                    callback(number.val());
+                });
+
+                return number;
             }
 
             return control;

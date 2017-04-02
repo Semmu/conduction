@@ -36,7 +36,11 @@ define(['../animation_base', '../controls'], function(animation, controls) {
         controls.Divider(),
         controls.Text('Réndzsek:'),
         controls.Range(5, 0, 1, 10, function(val) { alert('range1: ' + val);}),
-        controls.Range(5, -5, 0.1, 15, function(val) { alert('range 2: ' + val);})
+        controls.Range(5, -5, 0.1, 15, function(val) { alert('range 2: ' + val);}),
+        controls.Divider(),
+        controls.Text('Námbörsz:'),
+        controls.Number(5, 0, 1, 10, function(val) { alert('num 1: ' + val);}),
+        controls.Number(5, -5, 0.1, 15, function(val) { alert('num 2: ' + val);})
     ];
 
     return animation;
