@@ -93,7 +93,9 @@ define(['./util'], function(util) {
                 label.append(checkbox);
                 label.append(control.label);
 
-                checkbox.on('change', callback);
+                checkbox.on('change', function() {
+                    callback(checkbox.prop('checked'));
+                });
 
                 return label;
             }
@@ -121,7 +123,9 @@ define(['./util'], function(util) {
                         id: 'radio_control_' + control.counter + '_option_' + i
                     });
 
-                    radiobutton.on('change', callback);
+                    radiobutton.on('change', function() {
+                        callback($('input[name="' + radiobutton.prop('name') + '"]:checked').val());
+                    });
 
                     label.append(radiobutton);
                     label.append(options[i].label);
@@ -150,7 +154,9 @@ define(['./util'], function(util) {
                     step: step
                 });
 
-                range.on('change', callback);
+                range.on('change', function() {
+                    callback(range.val());
+                });
 
                 return range;
             }
