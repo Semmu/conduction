@@ -4,15 +4,12 @@ define(['./util'], function(util) {
 
     var controls = {
 
-        getCounter: function() {
-            return counter;
-        },
-
         Control: function() {
 
             counter++;
 
             var control = {
+                counter: counter,
                 type: 'none',
                 name: 'undefined',
                 label: '',
@@ -31,8 +28,25 @@ define(['./util'], function(util) {
             control.type = 'divider';
             control.name = 'divider';
             control.label = '';
-            control.create = function () {
+            control.create = function() {
                 return $('<hr>');
+            }
+
+            return control;
+
+        },
+
+        Text: function(text) {
+
+            var control = controls.Control();
+
+            control.type = 'text';
+            control.name = '';
+            control.label = '';
+            control.create = function() {
+                return $('<p>', {
+                    text: text
+                });
             }
 
             return control;
@@ -50,7 +64,7 @@ define(['./util'], function(util) {
                     type: 'button',
                     class: 'uk-button uk-width-1-1',
                     text: label,
-                    id: 'checkbox_control_' + controls.getCounter()
+                    id: 'checkbox_control_' + control.counter
                 });
 
                 button.on('click', callback);
@@ -61,7 +75,7 @@ define(['./util'], function(util) {
             return control;
         },
 
-        Checkbox: function(label, callback) {
+        Checkbox: function(label, checked, callback) {
 
             var control = controls.Control();
 
@@ -71,7 +85,8 @@ define(['./util'], function(util) {
 
                 var checkbox = $('<input>', {
                     type: 'checkbox',
-                    id: 'checkbox_control_' + controls.getCounter()
+                    checked: checked,
+                    id: 'checkbox_control_' + control.counter
                 });
                 var label = $('<label>');
 
@@ -95,17 +110,18 @@ define(['./util'], function(util) {
 
                 var elements = [];
 
-                console.log(options);
                 for (var i = 0; i < options.length; i++) {
-                    console.log(options[i]);
                     var label = $('<label>');
 
                     var radiobutton = $('<input>', {
                         type: 'radio',
                         value: options[i].value,
-                        name: 'radio_control_' + controls.getCounter(),
-                        id: 'radio_control_' + controls.getCounter() + '_option_' + i
+                        checked: (i == 0 ? true : false),
+                        name: 'radio_control_' + control.counter,
+                        id: 'radio_control_' + control.counter + '_option_' + i
                     });
+
+                    radiobutton.on('change', callback);
 
                     label.append(radiobutton);
                     label.append(options[i].label);
@@ -118,6 +134,29 @@ define(['./util'], function(util) {
             }
 
             return control;
+        },
+
+        Range: function(value, min, step, max, callback) {
+
+            var control = controls.Control();
+
+            control.type = 'range';
+            control.create = function() {
+                var range = $('<input>', {
+                    type: 'range',
+                    value: value,
+                    min: min,
+                    max: max,
+                    step: step
+                });
+
+                range.on('change', callback);
+
+                return range;
+            }
+
+            return control;
+
         }
 
     };

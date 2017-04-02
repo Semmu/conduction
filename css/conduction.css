@@ -6,6 +6,8 @@ body { background: #eee; }
 
 #animation_settings .control_wrapper { margin: 10px 0px; }
 
+#animation_settings p { margin: 0px 0px -10px; font-size: 11px; line-height: 16px; color: #999;}
 #animation_settings label { cursor: pointer; display: block; }
 #animation_settings input[type=checkbox], #animation_settings input[type=radio] { position: relative; top: 3px; left: 5px; margin-right: 10px; }
 #animation_settings hr { margin: 0px; border-style: dashed; }
+#animation_settings input[type=range] { width: 100%; }
