@@ -16,6 +16,11 @@ define(['../animation_base', '../controls'], function(animation, controls) {
         controls.Button('bátön', animation.onButtonClicked),
         controls.Divider(),
         controls.Checkbox('csekk it', function(){alert('x');}),
+        controls.Radio([
+            { label: 'első', value: 'elso' },
+            { label: '2', value: 'miazhogy' },
+            { label: 'HÁROM', value: 'tevagyazen' },
+        ], function() {alert('szóla');})
     ];
 
     return animation;

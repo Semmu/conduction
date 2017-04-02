@@ -4,8 +4,8 @@ body { background: #eee; }
 
 #animation_settings { padding-right: 20px; }
 
-#animation_settings > * { margin-bottom: 10px; }
+#animation_settings .control_wrapper { margin: 10px 0px; }
 
-#animation_settings label { cursor: pointer; }
-#animation_settings input[type=checkbox] { position: relative; top: 3px; left: 5px; margin-right: 10px; }
-#animation_settings hr { margin: 0px 0px 10px 0px; border-style: dashed; }
+#animation_settings label { cursor: pointer; display: block; }
+#animation_settings input[type=checkbox], #animation_settings input[type=radio] { position: relative; top: 3px; left: 5px; margin-right: 10px; }
+#animation_settings hr { margin: 0px; border-style: dashed; }

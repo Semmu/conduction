@@ -67,7 +67,14 @@ define(['./util'], function(util) {
 
             $('#animation_settings').empty();
             $.each(animationModule.settings, function(i, control) {
-                $('#animation_settings').append(control.create());
+
+                var wrapper = $('<div>', {
+                    class: 'control_wrapper'
+                });
+
+                wrapper.append(control.create());
+
+                $('#animation_settings').append(wrapper);
             });
         }
     };
