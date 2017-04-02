@@ -24,12 +24,15 @@ define(['./util'], function(util) {
 
             container.append(pixiApp.view);
 
-            for (var i = animations.length - 1; i >= 0; i--)
+            animations = Array.concat({ name: '', file: 'nothing' }, animations);
+            functions.loadAnimation(animations[0].file);
+
+            for (var i = 0; i < animations.length; i++)
             {
-                var option = document.createElement('option');
-                option.value = animations[i].file;
-                option.innerHTML = animations[i].name;
-                document.getElementById('animation_select').appendChild(option);
+                $('#animation_select').append($('<option>', {
+                    text: animations[i].name,
+                    value: animations[i].file
+                }));
             }
 
             functions.handleResize(); // to set the correct size

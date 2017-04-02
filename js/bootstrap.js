@@ -14,7 +14,7 @@ requirejs(['jquery/jquery-2.2.3.min', 'uikit/uikit.min', 'pixi/pixi.min'], funct
             main.handleResize();
         });
 
-        $('#animation_select').change(function() {
+        $('#animation_select').on('change', function() {
             main.loadAnimation($('#animation_select').val());
         });
 
