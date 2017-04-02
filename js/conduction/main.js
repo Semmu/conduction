@@ -66,9 +66,9 @@ define(['./util'], function(util) {
             $('#animation_description').text(animationModule.description);
 
             $('#animation_settings').empty();
-            for (var i = animationModule.settings.length - 1; i >= 0; i--) {
-                $('#animation_settings').append(animationModule.settings[i].create());
-            }
+            $.each(animationModule.settings, function(i, control) {
+                $('#animation_settings').append(control.create());
+            });
         }
     };
 

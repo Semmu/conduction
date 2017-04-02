@@ -5,33 +5,71 @@ define(['./util'], function(util) {
         Control: function() {
             var control = {
                 type: 'none',
-                name: '',
-                callback: null,
+                label: '',
                 create: function() {
-                    throw new Error("Control named '"+control.name+"' of type '"+control.type+"' create() not defined");
+                    throw new Error("Control named '"+control.label+"' of type '"+control.type+"' create() not defined");
                 }
             };
 
             return control;
         },
 
-        Button: function(label) {
+        Divider: function() {
+
+            var control = controls.Control();
+
+            control.type = 'divider';
+            control.label = '';
+            control.create = function () {
+                return $('<hr>');
+            }
+
+            return control;
+
+        },
+
+        Button: function(label, callback) {
 
             var control = controls.Control();
 
             control.type = 'button';
-            control.name = label;
+            control.label = label;
             control.create = function() {
-                element = $('<button>', {
+                var button = $('<button>', {
                     class: 'uk-button uk-width-1-1',
                     text: label
                 });
 
-                element.on('click', function() {
-                    alert('klikkk');
+                button.on('click', callback);
+
+                return button;
+            }
+
+            return control;
+        },
+
+        Checkbox: function(label, callback) {
+
+            var control = controls.Control();
+
+            control.type = 'checkbox';
+            control.label = label;
+            control.create = function() {
+
+                var checkbox = $('<input>', {
+                    type: 'checkbox'
+                });
+                var label = $('<label>', {
+                    class: 'uk-width-1-1',
+                    style: 'display:block;'
                 });
 
-                return element;
+                label.append(checkbox);
+                label.append(control.label);
+
+                checkbox.on('change', callback);
+
+                return label;
             }
 
             return control;
