@@ -3,15 +3,21 @@ define({
     description: "A short description of the animation and its available settings.",
     settings: [],
 
-    onLoad: function() {
-        throw new Error("missing onLoad");
+    scene: null,
+
+    setScene: function(s) {
+        scene = s;
     },
 
-    requestAnimationFrame: function() {
-        throw new Error("missing requestAnimationFrame");
+    onLoad: function() {
+        throw new Error("Animation::onLoad() not implemented!");
+    },
+
+    onRender: function() {
+        throw new Error("Animation::onRender() not implemented!");
     },
 
     onUnload: function() {
-        throw new Error("missing onUnload");
+        throw new Error("Animation::onUnload() not implemented!");
     }
 });

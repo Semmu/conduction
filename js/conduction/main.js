@@ -79,6 +79,19 @@ define(['./util'], function(util) {
 
                 $('#animation_settings').append(wrapper);
             });
+
+            animationModule.onLoad();
+            animationModule.setScene(rootScene);
+            requestAnimationFrame(functions.render);
+        },
+
+        render: function()
+        {
+            if (animationModule != null)
+            {
+                animationModule.onRender();
+                requestAnimationFrame(functions.render);
+            }
         }
     };
 

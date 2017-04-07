@@ -1,11 +1,14 @@
 define(['../animation_base', '../controls'], function(animation, controls) {
 
-
     animation.name = "PN diode";
     animation.description = "A simple animation showing the PN diode and its behaviour.";
 
     animation.onButtonClicked = function() {
         alert('müxik');
+    }
+
+    animation.onRender = function() {
+        console.log("do stuff");
     }
 
     animation.onLoad = function() {
