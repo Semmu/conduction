@@ -6,18 +6,18 @@ define({
     scene: null,
 
     setScene: function(s) {
-        scene = s;
+        this.scene = s;
     },
 
     onLoad: function() {
-        throw new Error("Animation::onLoad() not implemented!");
+        console.error("Animation::onLoad() not implemented!");
     },
 
     onRender: function() {
-        throw new Error("Animation::onRender() not implemented!");
+        console.error("Animation::onRender() not implemented!");
     },
 
     onUnload: function() {
-        throw new Error("Animation::onUnload() not implemented!");
+        console.error("Animation::onUnload() not implemented!");
     }
 });

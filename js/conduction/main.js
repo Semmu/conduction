@@ -8,6 +8,15 @@ define(['./util'], function(util) {
         SCALING_GAP = 0.1;
 
     var functions = {
+
+        render: function()
+        {
+            if (animationModule != null)
+            {
+                animationModule.onRender();
+            }
+        },
+
         initialize: function()
         {
             container = $('#animation_container');
@@ -36,6 +45,7 @@ define(['./util'], function(util) {
             }
 
             functions.handleResize(); // to set the correct size
+            pixiApp.ticker.add(functions.render);
         },
 
         handleResize: function()
@@ -80,18 +90,8 @@ define(['./util'], function(util) {
                 $('#animation_settings').append(wrapper);
             });
 
-            animationModule.onLoad();
             animationModule.setScene(rootScene);
-            requestAnimationFrame(functions.render);
-        },
-
-        render: function()
-        {
-            if (animationModule != null)
-            {
-                animationModule.onRender();
-                requestAnimationFrame(functions.render);
-            }
+            animationModule.onLoad();
         }
     };
 
