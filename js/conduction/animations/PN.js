@@ -12,7 +12,24 @@ define(['../animation_base', '../controls'], function(animation, controls) {
     }
 
     animation.onLoad = function() {
-        console.log("PN onLoad");
+        var top_rect = new PIXI.Graphics();
+
+        top_rect.lineStyle(0, 0x000000, 0);
+        top_rect.beginFill(0xff0000);
+        top_rect.drawRect(-200, -20, 150, 40);
+        top_rect.endFill();
+
+        top_rect.beginFill(0x0000ff);
+        top_rect.drawRect(50, -20, 150, 40);
+        top_rect.endFill();
+
+        top_rect.lineStyle(2, 0x000000, 1);
+        top_rect.drawRect(-200, -20, 400, 40);
+        top_rect.moveTo(0, -20);
+        top_rect.lineStyle(1, 0xdddd00, 1);
+        top_rect.lineTo(0, 20);
+
+        animation.scene.addChild(top_rect);
     }
 
     animation.settings = [

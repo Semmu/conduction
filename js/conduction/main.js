@@ -1,6 +1,6 @@
 define(['./util'], function(util) {
 
-    var container = null,
+    var DOMcontainer = null,
         pixiApp = null,
         rootScene = null,
         animationModule = null,
@@ -19,21 +19,21 @@ define(['./util'], function(util) {
 
         initialize: function()
         {
-            container = $('#animation_container');
+            DOMcontainer = $('#animation_container');
 
             pixiApp = new PIXI.Application(
-                container.width(),
-                container.height(),
+                DOMcontainer.width(),
+                DOMcontainer.height(),
                 {
                     transparent: true
                 }
             );
 
             rootScene = new PIXI.Container();
+            pixiApp.stage.addChild(rootScene);
+            DOMcontainer.append(pixiApp.view);
 
-            container.append(pixiApp.view);
-
-            animations = Array.concat({ name: '', file: 'nothing' }, animations);
+            animations = $.merge([{ name: '', file: 'nothing' }], animations);
             functions.loadAnimation(animations[0].file);
 
             for (var i = 0; i < animations.length; i++)
@@ -44,13 +44,12 @@ define(['./util'], function(util) {
                 }));
             }
 
-            functions.handleResize(); // to set the correct size
             pixiApp.ticker.add(functions.render);
         },
 
         handleResize: function()
         {
-            pixiApp.renderer.resize(container.width(), container.height());
+            pixiApp.renderer.resize(DOMcontainer.width(), DOMcontainer.height());
 
             rootScene.scale.set(1, 1);
             rootScene.position.set(pixiApp.renderer.width / 2, pixiApp.renderer.height / 2);
@@ -62,6 +61,8 @@ define(['./util'], function(util) {
 
         loadAnimation: function(name)
         {
+            rootScene.removeChildren();
+
             require(['conduction/animations/' + name], function(animation) {
                 animationModule = animation;
                 functions.initializeAnimation();
@@ -92,6 +93,8 @@ define(['./util'], function(util) {
 
             animationModule.setScene(rootScene);
             animationModule.onLoad();
+
+            functions.handleResize();
         }
     };
 
