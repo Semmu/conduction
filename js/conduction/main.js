@@ -32,6 +32,7 @@ define(['./util'], function(util) {
             rootScene = new PIXI.Container();
             pixiApp.stage.addChild(rootScene);
             DOMcontainer.append(pixiApp.view);
+            $(pixiApp.view).addClass('uk-vertical-align-middle');
 
             animations = $.merge([{ name: '', file: 'nothing' }], animations);
             functions.loadAnimation(animations[0].file);
