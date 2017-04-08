@@ -35,7 +35,7 @@ define(['./util'], function(util) {
             $(pixiApp.view).addClass('uk-vertical-align-middle');
 
             animations = $.merge([{ name: '', file: 'nothing' }], animations);
-            functions.loadAnimation(animations[0].file);
+            functions.loadAnimation(animations[animations.length-1].file);
 
             for (var i = 0; i < animations.length; i++)
             {
