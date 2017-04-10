@@ -1,4 +1,4 @@
-define(['util'], function(util) {
+define(['./util'], function(util) {
 
     var ddd = {
         Camera: {

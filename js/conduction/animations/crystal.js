@@ -1,4 +1,4 @@
-define(['../util', '../animation_base'], function(util, animation) {
+define(['../util', '../animation_base', '../3D'], function(util, animation, ddd) {
 
     animation.name = "Crystal Structure";
     animation.description = "This interactive animation shows the crystal structure of various materials used in microchip manufacturing.";
@@ -7,9 +7,10 @@ define(['../util', '../animation_base'], function(util, animation) {
 
     var Atom = function(x, y) {
 
-        var Atom = {};
-
-        Atom.Graphics = new PIXI.Graphics();
+        var Atom = {
+            Graphics: new PIXI.Graphics(),
+            Object: ddd.Object(x, y, 10),
+        };
 
         Atom.Graphics.lineStyle(2, 0x359283, 1);
         Atom.Graphics.beginFill(0x325647);
