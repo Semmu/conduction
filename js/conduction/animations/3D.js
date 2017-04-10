@@ -5,33 +5,15 @@ define(['../util', '../animation_base'], function(util, animation) {
 
     animation.atoms = new PIXI.Container();
 
-    var SpatialObject = function() {
-
-        var SpatialObject = {
-            x: 0,
-            y: 0,
-            z: 0,
-
-            getPosition: function() {
-                return {
-                    x: SpatialObject.x,
-                    y: SpatialObject.y,
-                    z: SpatialObject.z
-                }
-            }
-        };
-
-        return SpatialObject;
-    };
-
     var Atom = function(x, y) {
 
-        var Atom = SpatialObject();
+        var Atom = {};
 
         Atom.Graphics = new PIXI.Graphics();
 
-        Atom.Graphics.beginFill(0x9966FF);
-        Atom.Graphics.drawCircle(x, y, 10);
+        Atom.Graphics.lineStyle(2, 0x359283, 1);
+        Atom.Graphics.beginFill(0x325647);
+        Atom.Graphics.drawRoundedRect(x, y, 10, 10, 4);
         Atom.Graphics.endFill();
 
         return Atom;
