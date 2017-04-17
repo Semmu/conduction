@@ -2,9 +2,15 @@ define(['./util'], function(util) {
 
     var ddd = {
         Camera: {
-            DEPTH: 0.5,
-            WIDTH: 500,
-            HEIGHT: 500
+            DEPTH: 10,
+            WIDTH: 50,
+            HEIGHT: 50
+        },
+
+        getProjectedDistance: function(length, distance) {
+            var ratio = ddd.Camera.DEPTH / (distance + ddd.Camera.DEPTH);
+
+            return length * ratio;
         },
 
         Object: function(x, y, z) {
@@ -23,9 +29,12 @@ define(['./util'], function(util) {
                 },
 
                 getProjectedPosition: function() {
+
+                    var ratio = ddd.Camera.DEPTH / (object.z + ddd.Camera.DEPTH);
+
                     return {
-                        x: Camera.DEPTH * object.x / ( object.z + object.depth) + WIDTH,
-                        y: -1 * Camera.DEPTH * object.x / ( object.z + object.depth) + HEIGHT
+                        x: ratio * object.x,
+                        y: -1 * ratio * object.y
                     }
                 }
             };

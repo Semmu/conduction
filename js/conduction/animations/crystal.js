@@ -5,16 +5,16 @@ define(['../util', '../animation_base', '../3D'], function(util, animation, ddd)
 
     animation.atoms = new PIXI.Container();
 
-    var Atom = function(x, y) {
+    var Atom = function(x, y, z) {
 
         var Atom = {
             Graphics: new PIXI.Graphics(),
-            Object: ddd.Object(x, y, 10),
+            Object: ddd.Object(x, y, z),
+            Color: util.randInt(0xffffff)
         };
 
-        Atom.Graphics.lineStyle(2, 0x359283, 1);
-        Atom.Graphics.beginFill(0x325647);
-        Atom.Graphics.drawRoundedRect(x, y, 10, 10, 4);
+        Atom.Graphics.beginFill(Atom.Color);
+        Atom.Graphics.drawCircle(Atom.Object.getProjectedPosition().x, Atom.Object.getProjectedPosition().y, ddd.getProjectedDistance(10, Atom.Object.getPosition().z));
         Atom.Graphics.endFill();
 
         return Atom;
@@ -23,7 +23,7 @@ define(['../util', '../animation_base', '../3D'], function(util, animation, ddd)
     animation.onLoad = function() {
         var draggableOverlay = new PIXI.Graphics();
         draggableOverlay.beginFill(0xf6f5a4);
-        draggableOverlay.drawRect(-250, -250, 500, 500);
+        draggableOverlay.drawRect(-50, -50, 100, 100);
         draggableOverlay.endFill();
         draggableOverlay.interactive = true;
         draggableOverlay.alpha = 0.3;
@@ -56,8 +56,16 @@ define(['../util', '../animation_base', '../3D'], function(util, animation, ddd)
         .on('pointerupoutside', draggableOverlay.onDragEnd)
         .on('pointermove', draggableOverlay.onDragMove);
 
-        for (var i = 0; i < 10; i++) {
-            var anatom = Atom(util.randInt(500, true), util.randInt(500, true));
+        var poss = [
+            [100, 100, 20],
+            [-100, -100, 0],
+            [-100, 100, 0],
+            [100, 100, 0],
+            [100, -100, 0]
+        ];
+
+        for (var i = 0; i < poss.length; i++) {
+            var anatom = Atom(poss[i][0], poss[i][1], poss[i][2]);
             animation.atoms.addChild(anatom.Graphics);
         }
 
