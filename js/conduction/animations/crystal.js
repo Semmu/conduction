@@ -20,6 +20,31 @@ define(['../util', '../animation_base', '../3D'], function(util, animation, ddd)
         return Atom;
     }
 
+    var Line = function(from, to) {
+
+        var Line = {
+            Graphics: new PIXI.Graphics(),
+            From: ddd.Object(from[0], from[1], from[2]),
+            To: ddd.Object(to[0], to[1], to[2]),
+
+            draw: function() {
+
+                var projectedFrom = Line.From.getProjectedPosition();
+                var projectedTo = Line.To.getProjectedPosition();
+
+                Line.Graphics.clear();
+                Line.Graphics.moveTo(projectedFrom.x, projectedFrom.y);
+                Line.Graphics.lineStyle(1, 0x000000, 1);
+                Line.Graphics.lineTo(projectedTo.x, projectedTo.y);
+            }
+        };
+
+        Line.draw();
+
+        return Line;
+
+    }
+
     animation.onLoad = function() {
         var draggableOverlay = new PIXI.Graphics();
         draggableOverlay.beginFill(0xf6f5a4);
@@ -68,6 +93,9 @@ define(['../util', '../animation_base', '../3D'], function(util, animation, ddd)
             var anatom = Atom(poss[i][0], poss[i][1], poss[i][2]);
             animation.atoms.addChild(anatom.Graphics);
         }
+
+        var line1 = Line(poss[0], poss[1]);
+        animation.scene.addChild(line1.Graphics);
 
         animation.scene.addChild(draggableOverlay);
         animation.scene.addChild(animation.atoms);
