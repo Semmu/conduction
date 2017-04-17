@@ -189,6 +189,41 @@ define(['./util'], function(util) {
 
             return control;
 
+        },
+
+        Select: function(options, callback) {
+
+            var control = controls.Control();
+
+            control.type = 'select';
+            control.create = function() {
+
+                var select = $('<select>', {
+                    name: 'select_control_' + control.counter,
+                    id: 'select_control_' + control.counter,
+                    class: 'uk-width-1-1'
+                });
+
+                for (var i = 0; i < options.length; i++) {
+                    var option = $('<option>', {
+                        text: options[i].text,
+                        value: options[i].value,
+                        selected: (i==0)
+                    });
+
+                    select.append(option);
+                }
+
+                select.on('change', function() {
+                    callback(select.val());
+                });
+
+                return select;
+
+            }
+
+            return control;
+
         }
 
     };

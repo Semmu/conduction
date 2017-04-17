@@ -60,7 +60,14 @@ define(['../animation_base', '../controls'], function(animation, controls) {
         controls.Divider(),
         controls.Text('Námbörsz:'),
         controls.Number(5, 0, 1, 10, function(val) { alert('num 1: ' + val);}),
-        controls.Number(5, -5, 0.1, 15, function(val) { alert('num 2: ' + val);})
+        controls.Number(5, -5, 0.1, 15, function(val) { alert('num 2: ' + val);}),
+        controls.Divider(),
+        controls.Text('Szelektek'),
+        controls.Select([
+            {text: 'Első', value: 'elso'},
+            {text: 'Második', value: 'tu'},
+            {text: '3', value: 'tre'},
+        ], function(val) {alert(val);})
     ];
 
     return animation;
