@@ -82,11 +82,14 @@ define(['../util', '../animation_base', '../3D'], function(util, animation, ddd)
         .on('pointermove', draggableOverlay.onDragMove);
 
         var poss = [
-            [100, 100, 20],
             [-100, -100, 0],
             [-100, 100, 0],
             [100, 100, 0],
-            [100, -100, 0]
+            [100, -100, 0],
+            [-100, -100, 20],
+            [-100, 100, 20],
+            [100, 100, 20],
+            [100, -100, 20]
         ];
 
         for (var i = 0; i < poss.length; i++) {
@@ -94,8 +97,26 @@ define(['../util', '../animation_base', '../3D'], function(util, animation, ddd)
             animation.atoms.addChild(anatom.Graphics);
         }
 
-        var line1 = Line(poss[0], poss[1]);
-        animation.scene.addChild(line1.Graphics);
+        var connections = [
+            [0, 1],
+            [1, 2],
+            [2, 3],
+            [3, 0],
+            [4, 5],
+            [5, 6],
+            [6, 7],
+            [7, 4],
+            [4, 0],
+            [5, 1],
+            [6, 2],
+            [7, 3]
+        ];
+
+        for (var i = 0; i < connections.length; i++) {
+            var aline = Line(poss[connections[i][0]], poss[connections[i][1]]);
+            animation.scene.addChild(aline.Graphics);
+        }
+
 
         animation.scene.addChild(draggableOverlay);
         animation.scene.addChild(animation.atoms);
