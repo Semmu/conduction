@@ -14,7 +14,7 @@ define(['../util', '../animation_base', '../3D'], function(util, animation, ddd)
         };
 
         Atom.Graphics.beginFill(Atom.Color);
-        Atom.Graphics.drawCircle(Atom.Object.getProjectedPosition().x, Atom.Object.getProjectedPosition().y, ddd.getProjectedDistance(10, Atom.Object.getPosition().z));
+        Atom.Graphics.drawCircle(Atom.Object.Position.getProjection().x, Atom.Object.Position.getProjection().y, ddd.getProjectedDistance(10, Atom.Object.Position.z));
         Atom.Graphics.endFill();
 
         return Atom;
@@ -29,8 +29,8 @@ define(['../util', '../animation_base', '../3D'], function(util, animation, ddd)
 
             draw: function() {
 
-                var projectedFrom = Line.From.getProjectedPosition();
-                var projectedTo = Line.To.getProjectedPosition();
+                var projectedFrom = Line.From.Position.getProjection();
+                var projectedTo = Line.To.Position.getProjection();
 
                 Line.Graphics.clear();
                 Line.Graphics.moveTo(projectedFrom.x, projectedFrom.y);

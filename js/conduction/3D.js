@@ -13,30 +13,93 @@ define(['./util'], function(util) {
             return length * ratio;
         },
 
-        Object: function(x, y, z) {
+        Vector: function(x, y, z) {
 
-            var object = {
+            var vector = {
                 x: x,
                 y: y,
                 z: z,
 
-                getPosition: function() {
-                    return {
-                        x: object.x,
-                        y: object.y,
-                        z: object.z
-                    };
+                length: function() {
+                    return Math.sqrt(vector.x * vector.x +
+                                     vector.y * vector.y +
+                                     vector.z * vector.z);
                 },
 
-                getProjectedPosition: function() {
+                setLength: function(length) {
+                    var ratio = length / vector.length();
 
-                    var ratio = ddd.Camera.DEPTH / (object.z + ddd.Camera.DEPTH);
+                    vector.x *= ratio;
+                    vector.y *= ratio;
+                    vector.z *= ratio;
+                },
+
+                add: function(other) {
+                    return ddd.Vector(vector.x + other.x,
+                                      vector.y + other.y,
+                                      vector.z + other.z);
+                },
+
+                inverse: function() {
+                    return ddd.Vector(-vector.x, -vector.y, -vector.z);
+                },
+
+                dotProduct: function(other) {
+                    return vector.x * other.x + vector.y * other.y + vector.z * other.z;
+                },
+
+                crossProduct: function(other) {
+                    return ddd.Vector(vector.y * other.z - vector.z * other.y,
+                                      vector.z * other.x - vector.x * other.z,
+                                      vector.x * other.y - vector.y * other.x);
+                },
+
+                projectionOn: function(other) {
+                    var ratio = vector.dotProduct(other) / other.length();
+                    return ddd.Vector(other.x * ratio,
+                                      other.y * ratio,
+                                      other.z * ratio);
+                },
+
+                angleTo: function(other) {
+                    return Math.acos(vector.dotProduct(other) / vector.lengt() / other.lengt());
+                },
+
+                rotate: function(axis, angle) {
+
+                    var selfAxisComponent = vector.projectionOn(axis);
+                    var selfOrthogonalComponent = vector.add(selfAxisComponent.inverse());
+
+                    var orthogonalOrthogonal = axis.crossProduct(selfOrthogonalComponent);
+
+                    var x = Math.sin(angle) * orthogonalOrthogonal.x + Math.cos(angle) * selfOrthogonalComponent.x + selfAxisComponent.x;
+                    var y = Math.sin(angle) * orthogonalOrthogonal.y + Math.cos(angle) * selfOrthogonalComponent.y + selfAxisComponent.y;
+                    var z = Math.sin(angle) * orthogonalOrthogonal.z + Math.cos(angle) * selfOrthogonalComponent.z + selfAxisComponent.z;
+
+                    var result = ddd.Vector(x, y, z);
+                    result.setLength(vector.lengt());
+
+                    return result;
+                }
+
+                getProjection: function() {
+
+                    var ratio = ddd.Camera.DEPTH / (vector.z + ddd.Camera.DEPTH);
 
                     return {
-                        x: ratio * object.x,
-                        y: -1 * ratio * object.y
+                        x: ratio * vector.x,
+                        y: -1 * ratio * vector.y
                     }
                 }
+            };
+
+            return vector;
+        },
+
+        Object: function(x, y, z) {
+
+            var object = {
+                Position: ddd.Vector(x, y, z)
             };
 
             return object;
