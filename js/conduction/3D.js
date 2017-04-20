@@ -32,6 +32,8 @@ define(['./util'], function(util) {
                     vector.x *= ratio;
                     vector.y *= ratio;
                     vector.z *= ratio;
+
+                    return vector;
                 },
 
                 add: function(other) {
@@ -55,14 +57,14 @@ define(['./util'], function(util) {
                 },
 
                 projectionOn: function(other) {
-                    var ratio = vector.dotProduct(other) / other.length();
+                    var ratio = vector.dotProduct(other) / other.dotProduct(other);
                     return ddd.Vector(other.x * ratio,
                                       other.y * ratio,
                                       other.z * ratio);
                 },
 
                 angleTo: function(other) {
-                    return Math.acos(vector.dotProduct(other) / vector.lengt() / other.lengt());
+                    return Math.acos(vector.dotProduct(other) / vector.length() / other.length());
                 },
 
                 rotate: function(axis, angle) {
@@ -77,10 +79,10 @@ define(['./util'], function(util) {
                     var z = Math.sin(angle) * orthogonalOrthogonal.z + Math.cos(angle) * selfOrthogonalComponent.z + selfAxisComponent.z;
 
                     var result = ddd.Vector(x, y, z);
-                    result.setLength(vector.lengt());
+                    result.setLength(vector.length());
 
                     return result;
-                }
+                },
 
                 getProjection: function() {
 
@@ -90,6 +92,15 @@ define(['./util'], function(util) {
                         x: ratio * vector.x,
                         y: -1 * ratio * vector.y
                     }
+                },
+
+                log: function() {
+                    console.log({
+                        x: vector.x,
+                        y: vector.y,
+                        z: vector.z,
+                        length: vector.length()
+                    })
                 }
             };
 
