@@ -95,7 +95,19 @@ define(['./3D'], function(ddd) {
     testSame(ddd.Vector(1, 2, 3).rotate(ddd.Vector(1, 2, 3), 0), ddd.Vector(1, 2, 3));
 
     TESTING('distanceFromCamera');
-    testEq(ddd.Vector(0, 0, 0).distanceFromCamera(), 10);
-    testEq(ddd.Vector(0, 10, 10).distanceFromCamera(), Math.sqrt(500));
-    testEq(ddd.Vector(0, 0, -10).distanceFromCamera(), 0);
+    testEq(ddd.Vector(0, 0, 0).distanceFromCamera(), ddd.Camera.DEPTH);
+    testEq(ddd.Vector(0, 10, 10).distanceFromCamera(), ddd.Vector(0, 10, 10 + ddd.Camera.DEPTH).length());
+    testEq(ddd.Vector(0, 0, -1 * ddd.Camera.DEPTH).distanceFromCamera(), 0);
+
+    TESTING('transform');
+    testSame(ddd.Vector(1, 1, 1).transform(
+        ddd.Vector(2, 0, 0),
+        ddd.Vector(0, 2, 0),
+        ddd.Vector(0, 0, 2)
+    ), ddd.Vector(2, 2, 2));
+    testSame(ddd.Vector(1, 0, 0).transform(
+        ddd.Vector(1, 1, 1),
+        ddd.Vector(0, 0, 0),
+        ddd.Vector(0, 0, 0)
+    ), ddd.Vector(1, 1, 1));
 });

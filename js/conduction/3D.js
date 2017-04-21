@@ -3,8 +3,8 @@ define(['./util'], function(util) {
     var ddd = {
         Camera: {
             DEPTH: 10,
-            WIDTH: 50,
-            HEIGHT: 50
+            WIDTH: 500,
+            HEIGHT: 500
         },
 
         getProjectedDistance: function(length, distance) {
@@ -96,6 +96,12 @@ define(['./util'], function(util) {
 
                 distanceFromCamera: function() {
                     return ddd.Vector(vector.x, vector.y, vector.z + ddd.Camera.DEPTH).length();
+                },
+
+                transform: function(x, y, z) {
+                    return ddd.Vector(vector.x * x.x + vector.y * y.x + vector.z * z.x,
+                                      vector.x * x.y + vector.y * y.y + vector.z * z.y,
+                                      vector.x * x.z + vector.y * y.z + vector.z * z.z);
                 },
 
                 log: function() {
