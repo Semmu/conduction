@@ -94,6 +94,10 @@ define(['./util'], function(util) {
                     }
                 },
 
+                distanceFromCamera: function() {
+                    return ddd.Vector(vector.x, vector.y, vector.z + ddd.Camera.DEPTH).length();
+                },
+
                 log: function() {
                     console.log({
                         x: vector.x,
@@ -110,7 +114,34 @@ define(['./util'], function(util) {
         Object: function(x, y, z) {
 
             var object = {
-                Position: ddd.Vector(x, y, z)
+                Position: ddd.Vector(x, y, z),
+
+                ResultantPosition: null,
+                computeChildrenPosition: function() {
+                    for (var i = 0; i < object.children.length; i++) {
+
+                    }
+                },
+
+                Axes: {
+                    x: ddd.Vector(1, 0, 0),
+                    y: ddd.Vector(0, 1, 0),
+                    z: ddd.Vector(0, 0, 1)
+                },
+
+                children: [],
+
+                addChild: function(child) {
+                    object.children.push(child);
+                },
+
+                rotate: function(axis, angle) {
+                    object.Axes.x = object.Axes.x.rotate(axis, angle);
+                    object.Axes.y = object.Axes.y.rotate(axis, angle);
+                    object.Axes.z = object.Axes.z.rotate(axis, angle);
+                },
+
+
             };
 
             return object;
