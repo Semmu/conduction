@@ -3,30 +3,34 @@ define(['../util', '../animation_base', '../3D'], function(util, animation, ddd)
     animation.name = "Crystal Structure";
     animation.description = "This interactive animation shows the crystal structure of various materials used in microchip manufacturing.";
 
-    animation.atoms = new PIXI.Container();
+    animation.atomGraphics = new PIXI.Container();
+    animation.atoms = [];
 
-    var Object = function(x, y, z) {
-
-        var Object = {
-            Position: ddd.Vector(x, y, z)
-        };
-
-        return Object;
-
-    }
+    var Grid = {
+        Position: ddd.Vector(0, 0, 40),
+        rotation: 0.0
+    };
 
     var Atom = function(x, y, z) {
 
         var Atom = {
             Graphics: new PIXI.Graphics(),
             Object: ddd.Object(x, y, z),
-            Color: util.randInt(0xffffff)
+            Color: util.randInt(0xffffff),
+
+            draw: function() {
+
+                Atom.Graphics.clear();
+
+                var absolutePosition = Atom.Object.Position.add(Grid.Position);
+
+                Atom.Graphics.beginFill(Atom.Color);
+                Atom.Graphics.drawCircle(absolutePosition.getProjection().x, absolutePosition.getProjection().y, ddd.getProjectedDistance(10, absolutePosition.z));
+                Atom.Graphics.endFill();
+            }
         };
 
-        Atom.Graphics.beginFill(Atom.Color);
-        console.log(Atom.Object.Position.getProjection());
-        Atom.Graphics.drawCircle(Atom.Object.Position.getProjection().x, Atom.Object.Position.getProjection().y, ddd.getProjectedDistance(10, Atom.Object.Position.z));
-        Atom.Graphics.endFill();
+        Atom.draw();
 
         return Atom;
     }
@@ -105,7 +109,8 @@ define(['../util', '../animation_base', '../3D'], function(util, animation, ddd)
 
         for (var i = 0; i < poss.length; i++) {
             var anatom = Atom(poss[i][0], poss[i][1], poss[i][2]);
-            animation.atoms.addChild(anatom.Graphics);
+            animation.atoms.push(anatom);
+            animation.atomGraphics.addChild(anatom.Graphics);
         }
 
         var connections = [
@@ -123,17 +128,21 @@ define(['../util', '../animation_base', '../3D'], function(util, animation, ddd)
             [7, 3]
         ];
 
-        for (var i = 0; i < connections.length; i++) {
+        /*for (var i = 0; i < connections.length; i++) {
             var aline = Line(poss[connections[i][0]], poss[connections[i][1]]);
             animation.scene.addChild(aline.Graphics);
-        }
+        }*/
 
 
         animation.scene.addChild(draggableOverlay);
-        animation.scene.addChild(animation.atoms);
+        animation.scene.addChild(animation.atomGraphics);
     }
 
     animation.onRender = function() {
+        Grid.Position.z -= 0.1;
+        for (var i = 0; i < animation.atoms.length; i++) {
+            animation.atoms[i].draw();
+        }
     }
 
     return animation;

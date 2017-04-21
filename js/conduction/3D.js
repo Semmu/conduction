@@ -2,7 +2,7 @@ define(['./util'], function(util) {
 
     var ddd = {
         Camera: {
-            DEPTH: 10,
+            DEPTH: 50,
             WIDTH: 500,
             HEIGHT: 500
         },
