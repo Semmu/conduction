@@ -2,9 +2,9 @@ define(['./util'], function(util) {
 
     var ddd = {
         Camera: {
-            DEPTH: 250,
-            WIDTH: 500,
-            HEIGHT: 500
+            DEPTH: 500,
+            WIDTH: 400,
+            HEIGHT: 400
         },
 
         getProjectedDistance: function(length, distance) {

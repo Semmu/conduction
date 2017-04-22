@@ -5,6 +5,7 @@ define(['../util', '../animation_base', '../3D'], function(util, animation, ddd)
 
     animation.atomGraphics = new PIXI.Container();
     animation.atoms = [];
+    animation.lines = [];
 
     var Grid = {
         Position: ddd.Vector(0, 0, 40),
@@ -52,18 +53,28 @@ define(['../util', '../animation_base', '../3D'], function(util, animation, ddd)
 
         var Line = {
             Graphics: new PIXI.Graphics(),
-            From: ddd.Object(from[0], from[1], from[2]),
-            To: ddd.Object(to[0], to[1], to[2]),
+            From: ddd.Vector(from[0], from[1], from[2]),
+            To: ddd.Vector(to[0], to[1], to[2]),
 
             draw: function() {
 
-                var projectedFrom = Line.From.Position.getProjection();
-                var projectedTo = Line.To.Position.getProjection();
+                var absoluteFrom = Grid.Position.add(
+                    Line.From.transform(
+                        Grid.Axes.x,
+                        Grid.Axes.y,
+                        Grid.Axes.z
+                ));
+                var absoluteTo = Grid.Position.add(
+                    Line.To.transform(
+                        Grid.Axes.x,
+                        Grid.Axes.y,
+                        Grid.Axes.z
+                ));
 
                 Line.Graphics.clear();
-                Line.Graphics.moveTo(projectedFrom.x, projectedFrom.y);
+                Line.Graphics.moveTo(absoluteFrom.getProjection().x, absoluteFrom.getProjection().y);
                 Line.Graphics.lineStyle(1, 0x000000, 1);
-                Line.Graphics.lineTo(projectedTo.x, projectedTo.y);
+                Line.Graphics.lineTo(absoluteTo.getProjection().x, absoluteTo.getProjection().y);
             }
         };
 
@@ -79,17 +90,19 @@ define(['../util', '../animation_base', '../3D'], function(util, animation, ddd)
         draggableOverlay.drawRect(ddd.Camera.WIDTH / -2, ddd.Camera.HEIGHT / -2, ddd.Camera.WIDTH, ddd.Camera.HEIGHT);
         draggableOverlay.endFill();
         draggableOverlay.interactive = true;
-        draggableOverlay.alpha = 0.3;
+        draggableOverlay.alpha = 0;
 
         draggableOverlay.onDragStart = function(event) {
             this.dragStartPos = event.data.getLocalPosition(this.parent);
             this.data = event.data;
-            this.alpha = 1;
             this.dragging = true;
+            this.data.rotation = {
+                flat: Grid.Rotation.flat,
+                lean: Grid.Rotation.lean
+            };
         }
 
         draggableOverlay.onDragEnd = function() {
-            this.alpha = 0.3;
             this.data = null;
             this.dragging = false;
             this.x = 0;
@@ -101,6 +114,9 @@ define(['../util', '../animation_base', '../3D'], function(util, animation, ddd)
                 var newPosition = this.data.getLocalPosition(this.parent);
                 this.x = newPosition.x -this.dragStartPos.x;
                 this.y = newPosition.y -this.dragStartPos.y;
+
+                Grid.Rotation.flat = this.data.rotation.flat + this.x / -100;
+                Grid.Rotation.lean = this.data.rotation.lean + this.y / -100;
             }
         }
 
@@ -141,11 +157,11 @@ define(['../util', '../animation_base', '../3D'], function(util, animation, ddd)
             [7, 3]
         ];
 
-        /*for (var i = 0; i < connections.length; i++) {
+        for (var i = 0; i < connections.length; i++) {
             var aline = Line(poss[connections[i][0]], poss[connections[i][1]]);
+            animation.lines.push(aline);
             animation.scene.addChild(aline.Graphics);
-        }*/
-
+        }
 
         animation.scene.addChild(draggableOverlay);
         animation.scene.addChild(animation.atomGraphics);
@@ -154,14 +170,18 @@ define(['../util', '../animation_base', '../3D'], function(util, animation, ddd)
     animation.onRender = function() {
 
         Grid.Axes.x = ddd.Vector(1, 0, 0).rotate(ddd.Vector(0, 1, 0), Grid.Rotation.flat);
+        Grid.Axes.y = ddd.Vector(0, 1, 0);
         Grid.Axes.z = ddd.Vector(0, 0, 1).rotate(ddd.Vector(0, 1, 0), Grid.Rotation.flat);
 
         Grid.Axes.y = Grid.Axes.y.rotate(Grid.Axes.x, Grid.Rotation.lean);
         Grid.Axes.z = Grid.Axes.z.rotate(Grid.Axes.x, Grid.Rotation.lean);
 
-        Grid.Rotation.flat -= 0.005;
         for (var i = 0; i < animation.atoms.length; i++) {
             animation.atoms[i].draw();
+        }
+
+        for (var i = 0; i < animation.lines.length; i++) {
+            animation.lines[i].draw();
         }
     }
 
