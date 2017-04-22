@@ -10,7 +10,7 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
     animation.autoRotate = true;
 
     var Grid = {
-        Position: ddd.Vector(0, 0, 40),
+        Position: ddd.Vector(0, 0, 0),
         Axes: {
             x: ddd.Vector(1, 0, 0),
             y: ddd.Vector(0, 1, 0),
@@ -217,6 +217,8 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
         ], function(val) {}),
         controls.Text('Rotation'),
         controls.Button('Toggle auto rotation', function() {animation.autoRotate = !animation.autoRotate;}),
+        controls.Text('Distance'),
+        controls.Range(Grid.Position.z, -100, 1, 500, function(val) {Grid.Position.z=val;})
     ];
 
     return animation;
