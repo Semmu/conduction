@@ -154,8 +154,8 @@ define(['./util'], function(util) {
                     step: step
                 });
 
-                range.on('change', function() {
-                    callback(range.val());
+                range.on('input', function() {
+                    callback(parseFloat(range.val()));
                 });
 
                 return range;
@@ -180,8 +180,8 @@ define(['./util'], function(util) {
                     step: step
                 });
 
-                number.on('change', function() {
-                    callback(number.val());
+                number.on('input', function() {
+                    callback(parseFloat(number.val()));
                 });
 
                 return number;
