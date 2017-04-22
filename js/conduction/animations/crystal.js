@@ -3,11 +3,14 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
     animation.name = "Crystal Structure";
     animation.description = "This interactive animation shows the crystal structure of various materials used in microchip manufacturing.";
 
-    animation.atomGraphics = new PIXI.Container();
+    /*animation.atomGraphics = new PIXI.Container();
     animation.atoms = [];
-    animation.lines = [];
+    animation.lines = [];*/
+
+    var Spheres = [];
 
     animation.autoRotate = true;
+    var objectsToDraw = [];
 
     var Grid = {
         Position: ddd.Vector(0, 0, 0),
@@ -23,33 +26,36 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
         }
     };
 
-    var Atom = function(x, y, z) {
+    var Sphere = function(x, y, z) {
 
-        var Atom = {
+        var Sphere = {
             Graphics: new PIXI.Graphics(),
-            Object: ddd.Object(x, y, z),
+            Position: ddd.Vector(x, y, z),
             Color: util.randInt(0xffffff),
 
-            draw: function() {
+            distanceFromCamera: function() {
+                return Sphere.Position.distanceFromCamera();
+            },
 
-                Atom.Graphics.clear();
+            draw: function() {
+                Sphere.Graphics.clear();
 
                 var absolutePosition = Grid.Position.add(
-                    Atom.Object.Position.transform(
+                    Sphere.Position.transform(
                         Grid.Axes.x,
                         Grid.Axes.y,
                         Grid.Axes.z
                 ));
 
-                Atom.Graphics.beginFill(Atom.Color);
-                Atom.Graphics.drawCircle(absolutePosition.getProjection().x, absolutePosition.getProjection().y, ddd.getProjectedDistance(10, absolutePosition.z));
-                Atom.Graphics.endFill();
+                Sphere.Graphics.beginFill(Sphere.Color);
+                Sphere.Graphics.drawCircle(absolutePosition.getProjection().x, absolutePosition.getProjection().y, ddd.getProjectedDistance(10, absolutePosition.distanceFromCamera()));
+                Sphere.Graphics.endFill();
             }
         };
 
-        Atom.draw();
+        Sphere.draw();
 
-        return Atom;
+        return Sphere;
     }
 
     var Line = function(from, to) {
@@ -96,13 +102,13 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
         draggableOverlay.alpha = 0;
 
         draggableOverlay.onDragStart = function(event) {
+            this.data = event.data;
+            this.data.autoRotate = animation.autoRotate;
             animation.autoRotate = false;
 
             this.dragging = true;
             this.dragStartPos = event.data.getLocalPosition(this.parent);
 
-            this.data = event.data;
-            this.data.autoRotate = animation.autoRotate;
             this.data.previousPosition = {
                 x: this.x,
                 y: this.y
@@ -136,7 +142,15 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
         .on('pointerup', draggableOverlay.onDragEnd)
         .on('pointermove', draggableOverlay.onDragMove);
 
-        var poss = [
+        animation.scene.addChild(draggableOverlay);
+
+        for (var i = 0; i < 100; i++) {
+            var s = Sphere(util.randInt(200, true), util.randInt(200, true), util.randInt(200, true));
+            objectsToDraw.push(s);
+            animation.scene.addChild(s.Graphics);
+        }
+
+        /*var poss = [
             [-100, -100, -100],
             [-100, 100, -100],
             [100, 100, -100],
@@ -148,10 +162,10 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
         ];
 
         for (var i = 0; i < poss.length; i++) {
-            var anatom = Atom(poss[i][0], poss[i][1], poss[i][2]);
-            animation.atoms.push(anatom);
-            animation.atomGraphics.addChild(anatom.Graphics);
-        }
+            var anSphere = Sphere(poss[i][0], poss[i][1], poss[i][2]);
+            objectsToDraw.push(anSphere);
+            animation.scene.addChild(anSphere.Graphics);
+        }/*
 
         var connections = [
             [0, 1],
@@ -175,7 +189,7 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
         }
 
         animation.scene.addChild(draggableOverlay);
-        animation.scene.addChild(animation.atomGraphics);
+        animation.scene.addChild(animation.SphereGraphics);*/
     }
 
     animation.onRender = function() {
@@ -183,13 +197,17 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
         if (animation.autoRotate)
             Grid.rotate(0.003, 0);
 
-        for (var i = 0; i < animation.atoms.length; i++) {
-            animation.atoms[i].draw();
+        for (var i = objectsToDraw.length - 1; i >= 0; i--) {
+            objectsToDraw[i].draw();
+        }
+
+        /*for (var i = 0; i < animation.Spheres.length; i++) {
+            animation.Spheres[i].draw();
         }
 
         for (var i = 0; i < animation.lines.length; i++) {
             animation.lines[i].draw();
-        }
+        }*/
     }
 
     animation.settings = [
