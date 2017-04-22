@@ -8,7 +8,15 @@ define(['../util', '../animation_base', '../3D'], function(util, animation, ddd)
 
     var Grid = {
         Position: ddd.Vector(0, 0, 40),
-        rotation: 0.0
+        Axes: {
+            x: ddd.Vector(1, 0, 0),
+            y: ddd.Vector(0, 1, 0),
+            z: ddd.Vector(0, 0, 1)
+        },
+        Rotation: {
+            flat: 0.0,
+            lean: 0.0
+        }
     };
 
     var Atom = function(x, y, z) {
@@ -22,7 +30,12 @@ define(['../util', '../animation_base', '../3D'], function(util, animation, ddd)
 
                 Atom.Graphics.clear();
 
-                var absolutePosition = Atom.Object.Position.add(Grid.Position);
+                var absolutePosition = Grid.Position.add(
+                    Atom.Object.Position.transform(
+                        Grid.Axes.x,
+                        Grid.Axes.y,
+                        Grid.Axes.z
+                ));
 
                 Atom.Graphics.beginFill(Atom.Color);
                 Atom.Graphics.drawCircle(absolutePosition.getProjection().x, absolutePosition.getProjection().y, ddd.getProjectedDistance(10, absolutePosition.z));
@@ -97,14 +110,14 @@ define(['../util', '../animation_base', '../3D'], function(util, animation, ddd)
         .on('pointermove', draggableOverlay.onDragMove);
 
         var poss = [
-            [-100, -100, 10],
-            [-100, 100, 10],
-            [100, 100, 10],
-            [100, -100, 10],
-            [-100, -100, 30],
-            [-100, 100, 30],
-            [100, 100, 30],
-            [100, -100, 30]
+            [-100, -100, -100],
+            [-100, 100, -100],
+            [100, 100, -100],
+            [100, -100, -100],
+            [-100, -100, 100],
+            [-100, 100, 100],
+            [100, 100, 100],
+            [100, -100, 100]
         ];
 
         for (var i = 0; i < poss.length; i++) {
@@ -139,7 +152,14 @@ define(['../util', '../animation_base', '../3D'], function(util, animation, ddd)
     }
 
     animation.onRender = function() {
-        Grid.Position.z -= 0.1;
+
+        Grid.Axes.x = ddd.Vector(1, 0, 0).rotate(ddd.Vector(0, 1, 0), Grid.Rotation.flat);
+        Grid.Axes.z = ddd.Vector(0, 0, 1).rotate(ddd.Vector(0, 1, 0), Grid.Rotation.flat);
+
+        Grid.Axes.y = Grid.Axes.y.rotate(Grid.Axes.x, Grid.Rotation.lean);
+        Grid.Axes.z = Grid.Axes.z.rotate(Grid.Axes.x, Grid.Rotation.lean);
+
+        Grid.Rotation.flat -= 0.005;
         for (var i = 0; i < animation.atoms.length; i++) {
             animation.atoms[i].draw();
         }
