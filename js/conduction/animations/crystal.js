@@ -17,8 +17,25 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
             z: ddd.Vector(0, 0, 1)
         },
         Rotation: {
-            flat: 0.0,
-            lean: 0.0
+            flat: 0,
+            lean: 0
+        },
+        getRotatedAxes: function() {
+            var x = Grid.Axes.x.rotate(ddd.Vector(0, 1, 0), Grid.Rotation.flat).rotate(ddd.Vector(1, 0, 0), Grid.Rotation.lean).setLength(1);
+            var y = Grid.Axes.y.rotate(ddd.Vector(0, 1, 0), Grid.Rotation.flat).rotate(ddd.Vector(1, 0, 0), Grid.Rotation.lean).setLength(1);
+            var z = Grid.Axes.z.rotate(ddd.Vector(0, 1, 0), Grid.Rotation.flat).rotate(ddd.Vector(1, 0, 0), Grid.Rotation.lean).setLength(1);
+
+            return {
+                x: x,
+                y: y,
+                z: z
+            };
+        },
+        applyRotation: function() {
+            Grid.Axes = Grid.getRotatedAxes();
+
+            Grid.Rotation.flat = 0;
+            Grid.Rotation.lean = 0;
         }
     };
 
@@ -35,9 +52,9 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
 
                 var absolutePosition = Grid.Position.add(
                     Atom.Object.Position.transform(
-                        Grid.Axes.x,
-                        Grid.Axes.y,
-                        Grid.Axes.z
+                        Grid.getRotatedAxes().x,
+                        Grid.getRotatedAxes().y,
+                        Grid.getRotatedAxes().z
                 ));
 
                 Atom.Graphics.beginFill(Atom.Color);
@@ -62,15 +79,15 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
 
                 var absoluteFrom = Grid.Position.add(
                     Line.From.transform(
-                        Grid.Axes.x,
-                        Grid.Axes.y,
-                        Grid.Axes.z
+                        Grid.getRotatedAxes().x,
+                        Grid.getRotatedAxes().y,
+                        Grid.getRotatedAxes().z
                 ));
                 var absoluteTo = Grid.Position.add(
                     Line.To.transform(
-                        Grid.Axes.x,
-                        Grid.Axes.y,
-                        Grid.Axes.z
+                        Grid.getRotatedAxes().x,
+                        Grid.getRotatedAxes().y,
+                        Grid.getRotatedAxes().z
                 ));
 
                 Line.Graphics.clear();
@@ -95,34 +112,44 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
         draggableOverlay.alpha = 0;
 
         draggableOverlay.onDragStart = function(event) {
-            this.dragStartPos = event.data.getLocalPosition(this.parent);
-            this.data = event.data;
-            this.dragging = true;
-            this.data.rotation = {
-                flat: Grid.Rotation.flat,
-                lean: Grid.Rotation.lean
-            };
-            this.data.autoRotate = animation.autoRotate;
             animation.autoRotate = false;
-        }
 
-        draggableOverlay.onDragEnd = function() {
-            animation.autoRotate = this.data.autoRotate;
-            this.data = null;
-            this.dragging = false;
-            this.x = 0;
-            this.y = 0;
+            Grid.applyRotation();
+
+            this.dragging = true;
+            this.dragStartPos = event.data.getLocalPosition(this.parent);
+
+            this.data = event.data;
+            this.data.autoRotate = animation.autoRotate;
+            this.data.previousPosition = {
+                x: this.x,
+                y: this.y
+            }
         }
 
         draggableOverlay.onDragMove = function() {
             if (this.dragging) {
                 var newPosition = this.data.getLocalPosition(this.parent);
-                this.x = newPosition.x -this.dragStartPos.x;
-                this.y = newPosition.y -this.dragStartPos.y;
+                this.x = newPosition.x - this.dragStartPos.x;
+                this.y = newPosition.y - this.dragStartPos.y;
 
-                Grid.Rotation.flat = this.data.rotation.flat + this.x / -100;
-                Grid.Rotation.lean = this.data.rotation.lean + this.y / -100;
+                Grid.Rotation.flat = (this.data.previousPosition.x - this.x) / 100;
+                Grid.Rotation.lean = (this.data.previousPosition.y - this.y) / 100;
+                Grid.applyRotation();
+
+                this.data.previousPosition = {
+                    x: this.x,
+                    y: this.y
+                };
             }
+        }
+
+        draggableOverlay.onDragEnd = function() {
+            animation.autoRotate = this.data.autoRotate;
+            this.dragging = false;
+            this.data = null;
+            this.x = 0;
+            this.y = 0;
         }
 
         draggableOverlay.on('pointerdown', draggableOverlay.onDragStart)
@@ -172,16 +199,6 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
     }
 
     animation.onRender = function() {
-
-        if (animation.autoRotate)
-            Grid.Rotation.flat -= 0.003;
-
-        Grid.Axes.x = ddd.Vector(1, 0, 0).rotate(ddd.Vector(0, 1, 0), Grid.Rotation.flat);
-        Grid.Axes.y = ddd.Vector(0, 1, 0);
-        Grid.Axes.z = ddd.Vector(0, 0, 1).rotate(ddd.Vector(0, 1, 0), Grid.Rotation.flat);
-
-        Grid.Axes.y = Grid.Axes.y.rotate(Grid.Axes.x, Grid.Rotation.lean);
-        Grid.Axes.z = Grid.Axes.z.rotate(Grid.Axes.x, Grid.Rotation.lean);
 
         for (var i = 0; i < animation.atoms.length; i++) {
             animation.atoms[i].draw();
