@@ -1,4 +1,4 @@
-define(['../util', '../animation_base', '../3D'], function(util, animation, ddd) {
+define(['../util', '../animation_base', '../controls', '../3D'], function(util, animation, controls, ddd) {
 
     animation.name = "Crystal Structure";
     animation.description = "This interactive animation shows the crystal structure of various materials used in microchip manufacturing.";
@@ -6,6 +6,8 @@ define(['../util', '../animation_base', '../3D'], function(util, animation, ddd)
     animation.atomGraphics = new PIXI.Container();
     animation.atoms = [];
     animation.lines = [];
+
+    animation.autoRotate = true;
 
     var Grid = {
         Position: ddd.Vector(0, 0, 40),
@@ -100,9 +102,12 @@ define(['../util', '../animation_base', '../3D'], function(util, animation, ddd)
                 flat: Grid.Rotation.flat,
                 lean: Grid.Rotation.lean
             };
+            this.data.autoRotate = animation.autoRotate;
+            animation.autoRotate = false;
         }
 
         draggableOverlay.onDragEnd = function() {
+            animation.autoRotate = this.data.autoRotate;
             this.data = null;
             this.dragging = false;
             this.x = 0;
@@ -122,7 +127,6 @@ define(['../util', '../animation_base', '../3D'], function(util, animation, ddd)
 
         draggableOverlay.on('pointerdown', draggableOverlay.onDragStart)
         .on('pointerup', draggableOverlay.onDragEnd)
-        .on('pointerupoutside', draggableOverlay.onDragEnd)
         .on('pointermove', draggableOverlay.onDragMove);
 
         var poss = [
@@ -169,6 +173,9 @@ define(['../util', '../animation_base', '../3D'], function(util, animation, ddd)
 
     animation.onRender = function() {
 
+        if (animation.autoRotate)
+            Grid.Rotation.flat -= 0.003;
+
         Grid.Axes.x = ddd.Vector(1, 0, 0).rotate(ddd.Vector(0, 1, 0), Grid.Rotation.flat);
         Grid.Axes.y = ddd.Vector(0, 1, 0);
         Grid.Axes.z = ddd.Vector(0, 0, 1).rotate(ddd.Vector(0, 1, 0), Grid.Rotation.flat);
@@ -184,6 +191,16 @@ define(['../util', '../animation_base', '../3D'], function(util, animation, ddd)
             animation.lines[i].draw();
         }
     }
+
+    animation.settings = [
+        controls.Text('Material (does nothing yet)'),
+        controls.Select([
+            {text: 'Silicon', value: 'silicon'},
+            {text: 'Something else', value: 'sth'}
+        ], function(val) {}),
+        controls.Text('Rotation'),
+        controls.Button('Toggle auto rotation', function() {animation.autoRotate = !animation.autoRotate;}),
+    ];
 
     return animation;
 });
