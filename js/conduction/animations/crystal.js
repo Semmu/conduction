@@ -267,7 +267,7 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
         animation.scene.addChild(draggableOverlay);
 
         renderEnd = performance.now();
-        console.log(renderEnd - renderStart);
+        //console.log(renderEnd - renderStart);
     }
 
     animation.settings = [
