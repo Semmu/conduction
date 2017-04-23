@@ -36,6 +36,12 @@ define(['./util'], function(util) {
                     return vector;
                 },
 
+                scale: function(ratio) {
+                    return ddd.Vector(vector.x * ratio,
+                                      vector.y * ratio,
+                                      vector.z * ratio);
+                },
+
                 add: function(other) {
                     return ddd.Vector(vector.x + other.x,
                                       vector.y + other.y,

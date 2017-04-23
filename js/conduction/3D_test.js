@@ -54,6 +54,10 @@ define(['./3D'], function(ddd) {
     testSame(ddd.Vector(3, 4, 0).setLength(0.5), ddd.Vector(0.3, 0.4, 0));
     testSame(ddd.Vector(1, 1, 1).setLength(Math.sqrt(3) * 2), ddd.Vector(2, 2, 2));
 
+    TESTING('scale');
+    testSame(ddd.Vector(1, 1, 1).scale(0.5), ddd.Vector(0.5, 0.5, 0.5));
+    testSame(ddd.Vector(5, 8, 3).scale(2), ddd.Vector(10, 16, 6));
+
     TESTING('add');
     testSame(ddd.Vector(3, 4, 5).add(ddd.Vector(1, 0, 4)), ddd.Vector(4, 4, 9));
     testSame(ddd.Vector(1, 1, 1).add(ddd.Vector(-4, -2, 9)), ddd.Vector(-3, -1, 10));
