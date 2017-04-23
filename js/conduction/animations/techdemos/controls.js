@@ -1,73 +1,66 @@
 define(['../../animation_base', '../../controls'], function(animation, controls) {
 
-    animation.name = "PN diode";
-    animation.description = "A simple animation showing the PN diode and its behaviour.";
+    animation.name = "Control Widgets";
+    animation.description = "This \"animation\" showcases the available controls which can be used to interact with the animation itself. You can create multiple of them in any combination you need.\n\nWith these, you can trigger events, toggle features, change values, etc.\n\nAll these widgets in this example log to the debug console via their callback functions.";
 
-    animation.onButtonClicked = function() {
-        alert('müxik');
-    }
+    var rect = 0;
 
     animation.onRender = function() {
-        console.log("do stuff");
+        rect.rotation += 0.001;
     }
 
     animation.onLoad = function() {
-        var top_rect = new PIXI.Graphics();
+        var arrow = new PIXI.Graphics();
 
-        top_rect.lineStyle(0, 0x000000, 0);
-        top_rect.beginFill(0xff0000);
-        top_rect.drawRect(-200, -20, 150, 40);
-        top_rect.endFill();
+        arrow.lineStyle(5, 0x00b0fa, 1);
+        arrow.moveTo(20, 50);
+        arrow.lineTo(70, 0);
+        arrow.lineTo(20, -50)
+        arrow.moveTo(70, 0);
+        arrow.lineTo(-70, 0);
 
-        top_rect.beginFill(0x0000ff);
-        top_rect.drawRect(50, -20, 150, 40);
-        top_rect.endFill();
+        var bgRect = new PIXI.Graphics();
+        bgRect.beginFill(0xffffff);
+        bgRect.drawRect(-250, -250, 500, 500);
+        bgRect.endFill();
 
-        top_rect.lineStyle(2, 0x000000, 1);
-        top_rect.drawRect(-200, -20, 400, 40);
-        top_rect.moveTo(0, -20);
-        top_rect.lineStyle(1, 0xdddd00, 1);
-        top_rect.lineTo(0, 20);
+        rect = new PIXI.Graphics();
+        rect.beginFill(0xeeeeee);
+        rect.drawRect(-230, -230, 460, 460);
+        rect.endFill();
+        rect.rotation = Math.PI / 2;
 
-        animation.scene.addChild(top_rect);
+        animation.scene.addChild(bgRect);
+        animation.scene.addChild(rect);
+        animation.scene.addChild(arrow);
     }
 
     animation.settings = [
-        controls.Text('Gombok:'),
-        controls.Button('gomb 1', function() {alert('btn1');}),
-        controls.Button('bomg 2', function() {alert('btn 2');}),
+        controls.Text('Button:'),
+        controls.Button('This is a button.', function() {console.log('Button pressed.');}),
         controls.Divider(),
-        controls.Text('Csekbokszok:'),
-        controls.Checkbox('csekk it', true, function(state){alert('elso ' + state);}),
-        controls.Checkbox('csekk ezt is', true, function(state){alert('2: ' + state);}),
+        controls.Text('Checkbox:'),
+        controls.Checkbox('A checkbox for toggling things.', true, function(state){console.log('Checkbox\'s state: ' + state);}),
         controls.Divider(),
-        controls.Text('Szólarádiók:'),
+        controls.Text('Radiobuttons:'),
         controls.Radio([
-            { label: 'első', value: 'elso' },
-            { label: 'HÁROM', value: 'tevagyazen' },
-        ], function(val) {alert('r1:' + val);}),
-        controls.Radio([
-            { label: 'a', value: '1' },
-            { label: 'b', value: '2' },
-            { label: 'c', value: '3' },
-            { label: 'd', value: '4' },
-            { label: 'e', value: '5' }
-        ], function(val) {alert('r2: ' + val);}),
+            { label: 'Option 1', value: 'one' },
+            { label: 'Option 2', value: 'two' },
+            { label: 'Option 3', value: 'three' }
+        ], function(val) {console.log('Selected radiobutton\'s value: ' + val);}),
         controls.Divider(),
-        controls.Text('Réndzsek:'),
-        controls.Range(5, 0, 1, 10, function(val) { alert('range1: ' + val);}),
-        controls.Range(5, -5, 0.1, 15, function(val) { alert('range 2: ' + val);}),
+        controls.Text('Range:'),
+        controls.Range(5, 0, 1, 10, function(val) { console.log('Range value: ' + val);}),
         controls.Divider(),
-        controls.Text('Námbörsz:'),
-        controls.Number(5, 0, 1, 10, function(val) { alert('num 1: ' + val);}),
-        controls.Number(5, -5, 0.1, 15, function(val) { alert('num 2: ' + val);}),
+        controls.Text('Number:'),
+        controls.Number(5, 0, 1, 10, function(val) { console.log('Number value: ' + val);}),
         controls.Divider(),
-        controls.Text('Szelektek'),
+        controls.Text('Select:'),
         controls.Select([
-            {text: 'Első', value: 'elso'},
-            {text: 'Második', value: 'tu'},
-            {text: '3', value: 'tre'},
-        ], function(val) {alert(val);})
+            {text: 'Option 1', value: 'one'},
+            {text: 'Option 2', value: 'two'},
+            {text: 'Option 3', value: 'three'},
+        ], function(val) {console.log('Selected option: ' + val);})
     ];
 
     return animation;
