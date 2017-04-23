@@ -19,5 +19,7 @@ define({
 
     onUnload: function() {
         console.error("Animation::onUnload() not implemented!");
-    }
+    },
+
+    unloaded: false
 });

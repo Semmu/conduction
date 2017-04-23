@@ -11,7 +11,7 @@ define(['./util'], function(util) {
 
         render: function()
         {
-            if (animationModule != null)
+            if (animationModule != null && !animationModule.unloaded)
             {
                 animationModule.onRender();
             }
@@ -62,6 +62,13 @@ define(['./util'], function(util) {
 
         loadAnimation: function(name)
         {
+            if (animationModule != null)
+                animationModule.unloaded = true;
+
+            $('#animation_title').empty();
+            $('#animation_description').empty();
+            $('#animation_settings').empty();
+
             rootScene.removeChildren();
 
             require(['conduction/animations/' + name], function(animation) {
