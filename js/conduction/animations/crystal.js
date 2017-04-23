@@ -26,6 +26,8 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
         }
     };
 
+    var SPHERE_SIZE = 30;
+
     var Sphere = function(x, y, z) {
 
         var Sphere = {
@@ -53,7 +55,7 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
                 var projection = absolutePosition.getProjection();
 
                 Sphere.Graphics.beginFill(Sphere.Color);
-                Sphere.Graphics.drawCircle(projection.x, projection.y, ddd.getProjectedDistance(10, absolutePosition.distanceFromCamera()));
+                Sphere.Graphics.drawCircle(projection.x, projection.y, ddd.getProjectedDistance(SPHERE_SIZE, absolutePosition.distanceFromCamera()));
                 Sphere.Graphics.endFill();
             }
         };
@@ -150,10 +152,19 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
 
         animation.scene.addChild(draggableOverlay);
 
-        for (var i = 0; i < 300; i++) {
-            var s = Sphere(util.randInt(200, true), util.randInt(200, true), util.randInt(200, true));
-            objectsToDraw.push(s);
-            animation.scene.addChild(s.Graphics);
+        var SIZE = 3;
+        for (var x = 0; x < SIZE; x++) {
+            for (var y = 0; y < SIZE; y++) {
+                for (var z = 0; z < SIZE; z++) {
+                    var s = Sphere(
+                        (x+1) * SPHERE_SIZE - (0.5 * SIZE * SPHERE_SIZE) - (0.5 * SPHERE_SIZE),
+                        (y+1) * SPHERE_SIZE - (0.5 * SIZE * SPHERE_SIZE) - (0.5 * SPHERE_SIZE),
+                        (z+1) * SPHERE_SIZE - (0.5 * SIZE * SPHERE_SIZE) - (0.5 * SPHERE_SIZE)
+                    );
+                    objectsToDraw.push(s);
+                    animation.scene.addChild(s.Graphics);
+                }
+            }
         }
 
         /*var poss = [
