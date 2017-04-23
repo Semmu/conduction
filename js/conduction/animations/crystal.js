@@ -221,16 +221,20 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
         }
     }
 
+    var renderStart, renderEnd;
+
     animation.onRender = function() {
+
+        renderStart = performance.now();
 
         animation.scene.removeChildren();
 
         if (animation.autoRotate)
             Grid.rotate(0.003, 0);
 
-        objectsToDraw.sort(function(a, b) {
+        /*objectsToDraw.sort(function(a, b) {
             return a.distanceFromCamera() - b.distanceFromCamera();
-        });
+        });*/
 
         for (var i = objectsToDraw.length - 1; i >= 0; i--) {
             objectsToDraw[i].draw();
@@ -238,6 +242,9 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
         }
 
         animation.scene.addChild(draggableOverlay);
+
+        renderEnd = performance.now();
+        console.log(renderEnd - renderStart);
     }
 
     animation.settings = [
