@@ -165,7 +165,6 @@ define(['../../util', '../../animation_base', '../../controls', '../../3D'], fun
                         (z+1) * SPHERE_GAP - (0.5 * SIZE * SPHERE_GAP) - (0.5 * SPHERE_GAP)
                     );
                     objectsToDraw.push(s);
-                    animation.scene.addChild(s.Graphics);
 
                     if (x != SIZE - 1)
                     {
@@ -183,7 +182,6 @@ define(['../../util', '../../animation_base', '../../controls', '../../3D'], fun
                         );
 
                         objectsToDraw.push(lx);
-                        animation.scene.addChild(lx.Graphics);
                     }
 
                     if (y != SIZE - 1)
@@ -202,7 +200,6 @@ define(['../../util', '../../animation_base', '../../controls', '../../3D'], fun
                         );
 
                         objectsToDraw.push(ly);
-                        animation.scene.addChild(ly.Graphics);
                     }
 
                     if (z != SIZE - 1)
@@ -221,7 +218,6 @@ define(['../../util', '../../animation_base', '../../controls', '../../3D'], fun
                         );
 
                         objectsToDraw.push(lz);
-                        animation.scene.addChild(lz.Graphics);
                     }
                 }
             }
