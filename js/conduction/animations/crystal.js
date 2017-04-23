@@ -3,12 +3,7 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
     animation.name = "Crystal Structure";
     animation.description = "This interactive animation shows the crystal structure of various materials used in microchip manufacturing.";
 
-    /*animation.atomGraphics = new PIXI.Container();
-    animation.atoms = [];
-    animation.lines = [];*/
-
     var Spheres = [];
-
     animation.autoRotate = true;
     var objectsToDraw = [];
 
@@ -55,7 +50,7 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
                 var projection = absolutePosition.getProjection();
 
                 Sphere.Graphics.beginFill(Sphere.Color);
-                Sphere.Graphics.drawCircle(projection.x, projection.y, ddd.getProjectedDistance(SPHERE_SIZE, absolutePosition.distanceFromCamera()));
+                Sphere.Graphics.drawCircle(projection.x, projection.y, ddd.getProjectedDistance(SPHERE_SIZE, absolutePosition.distanceFromCamera() - SPHERE_SIZE / 2));
                 Sphere.Graphics.endFill();
             }
         };
@@ -152,7 +147,7 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
 
         animation.scene.addChild(draggableOverlay);
 
-        var SIZE = 3;
+        var SIZE = 5;
         for (var x = 0; x < SIZE; x++) {
             for (var y = 0; y < SIZE; y++) {
                 for (var z = 0; z < SIZE; z++) {
@@ -166,47 +161,6 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
                 }
             }
         }
-
-        /*var poss = [
-            [-100, -100, -100],
-            [-100, 100, -100],
-            [100, 100, -100],
-            [100, -100, -100],
-            [-100, -100, 100],
-            [-100, 100, 100],
-            [100, 100, 100],
-            [100, -100, 100]
-        ];
-
-        for (var i = 0; i < poss.length; i++) {
-            var anSphere = Sphere(poss[i][0], poss[i][1], poss[i][2]);
-            objectsToDraw.push(anSphere);
-            animation.scene.addChild(anSphere.Graphics);
-        }/*
-
-        var connections = [
-            [0, 1],
-            [1, 2],
-            [2, 3],
-            [3, 0],
-            [4, 5],
-            [5, 6],
-            [6, 7],
-            [7, 4],
-            [4, 0],
-            [5, 1],
-            [6, 2],
-            [7, 3]
-        ];
-
-        for (var i = 0; i < connections.length; i++) {
-            var aline = Line(poss[connections[i][0]], poss[connections[i][1]]);
-            animation.lines.push(aline);
-            animation.scene.addChild(aline.Graphics);
-        }
-
-        animation.scene.addChild(draggableOverlay);
-        animation.scene.addChild(animation.SphereGraphics);*/
     }
 
     animation.onRender = function() {
@@ -226,15 +180,6 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
         }
 
         animation.scene.addChild(draggableOverlay);
-
-
-        /*for (var i = 0; i < animation.Spheres.length; i++) {
-            animation.Spheres[i].draw();
-        }
-
-        for (var i = 0; i < animation.lines.length; i++) {
-            animation.lines[i].draw();
-        }*/
     }
 
     animation.settings = [
