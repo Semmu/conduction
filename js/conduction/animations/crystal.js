@@ -33,22 +33,27 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
             Position: ddd.Vector(x, y, z),
             Color: util.randInt(0xffffff),
 
-            distanceFromCamera: function() {
-                return Sphere.Position.distanceFromCamera();
-            },
-
-            draw: function() {
-                Sphere.Graphics.clear();
-
-                var absolutePosition = Grid.Position.add(
+            getAbsolutePosition: function() {
+                return Grid.Position.add(
                     Sphere.Position.transform(
                         Grid.Axes.x,
                         Grid.Axes.y,
                         Grid.Axes.z
                 ));
+            },
+
+            distanceFromCamera: function() {
+                return Sphere.getAbsolutePosition().distanceFromCamera();
+            },
+
+            draw: function() {
+                Sphere.Graphics.clear();
+
+                var absolutePosition = Sphere.getAbsolutePosition();
+                var projection = absolutePosition.getProjection();
 
                 Sphere.Graphics.beginFill(Sphere.Color);
-                Sphere.Graphics.drawCircle(absolutePosition.getProjection().x, absolutePosition.getProjection().y, ddd.getProjectedDistance(10, absolutePosition.distanceFromCamera()));
+                Sphere.Graphics.drawCircle(projection.x, projection.y, ddd.getProjectedDistance(10, absolutePosition.distanceFromCamera()));
                 Sphere.Graphics.endFill();
             }
         };
@@ -93,8 +98,9 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
 
     }
 
+    var draggableOverlay = new PIXI.Graphics();
+
     animation.onLoad = function() {
-        var draggableOverlay = new PIXI.Graphics();
         draggableOverlay.beginFill(0xf6f5a4);
         draggableOverlay.drawRect(ddd.Camera.WIDTH / -2, ddd.Camera.HEIGHT / -2, ddd.Camera.WIDTH, ddd.Camera.HEIGHT);
         draggableOverlay.endFill();
@@ -144,7 +150,7 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
 
         animation.scene.addChild(draggableOverlay);
 
-        for (var i = 0; i < 100; i++) {
+        for (var i = 0; i < 300; i++) {
             var s = Sphere(util.randInt(200, true), util.randInt(200, true), util.randInt(200, true));
             objectsToDraw.push(s);
             animation.scene.addChild(s.Graphics);
@@ -194,12 +200,22 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
 
     animation.onRender = function() {
 
+        animation.scene.removeChildren();
+
         if (animation.autoRotate)
             Grid.rotate(0.003, 0);
 
+        objectsToDraw.sort(function(a, b) {
+            return a.distanceFromCamera() - b.distanceFromCamera();
+        });
+
         for (var i = objectsToDraw.length - 1; i >= 0; i--) {
             objectsToDraw[i].draw();
+            animation.scene.addChild(objectsToDraw[i].Graphics);
         }
+
+        animation.scene.addChild(draggableOverlay);
+
 
         /*for (var i = 0; i < animation.Spheres.length; i++) {
             animation.Spheres[i].draw();
