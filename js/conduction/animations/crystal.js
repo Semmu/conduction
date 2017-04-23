@@ -40,8 +40,10 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
                 ));
             },
 
-            distanceFromCamera: function() {
-                return Sphere.getAbsolutePosition().distanceFromCamera();
+            distanceFromCamera: null,
+
+            computeDistanceFromCamera: function() {
+                Sphere.distanceFromCamera = Sphere.getAbsolutePosition().distanceFromCamera();
             },
 
             draw: function() {
@@ -75,10 +77,12 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
                 };
             },
 
-            distanceFromCamera: function() {
+            distanceFromCamera: null,
+
+            computeDistanceFromCamera: function() {
                 var absolutePosition = Line.getAbsolutePosition();
                 var middle = absolutePosition.From.add(absolutePosition.To).scale(0.5);
-                return middle.distanceFromCamera();
+                Line.distanceFromCamera = middle.distanceFromCamera();
             },
 
             draw: function() {
@@ -232,9 +236,14 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
         if (animation.autoRotate)
             Grid.rotate(0.003, 0);
 
-        /*objectsToDraw.sort(function(a, b) {
-            return a.distanceFromCamera() - b.distanceFromCamera();
-        });*/
+
+        for (var i = objectsToDraw.length - 1; i >= 0; i--) {
+            objectsToDraw[i].computeDistanceFromCamera();
+        }
+
+        objectsToDraw.sort(function(a, b) {
+            return a.distanceFromCamera - b.distanceFromCamera;
+        });
 
         for (var i = objectsToDraw.length - 1; i >= 0; i--) {
             objectsToDraw[i].draw();
