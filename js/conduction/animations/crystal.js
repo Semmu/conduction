@@ -46,6 +46,12 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
                 Sphere.distanceFromCamera = Sphere.getAbsolutePosition().distanceFromCamera();
             },
 
+            zDistance: null,
+
+            computeZDistance: function() {
+                Sphere.zDistance = Sphere.getAbsolutePosition().z;
+            },
+
             draw: function() {
                 Sphere.Graphics.clear();
 
@@ -83,6 +89,13 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
                 var absolutePosition = Line.getAbsolutePosition();
                 var middle = absolutePosition.From.add(absolutePosition.To).scale(0.5);
                 Line.distanceFromCamera = middle.distanceFromCamera();
+            },
+
+            zDistance: null,
+
+            computeZDistance: function() {
+                var absolutePosition = Line.getAbsolutePosition();
+                Line.zDistance = (absolutePosition.From.z + absolutePosition.To.z) / 2;
             },
 
             draw: function() {
@@ -238,11 +251,11 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
 
 
         for (var i = objectsToDraw.length - 1; i >= 0; i--) {
-            objectsToDraw[i].computeDistanceFromCamera();
+            objectsToDraw[i].computeZDistance();
         }
 
         objectsToDraw.sort(function(a, b) {
-            return a.distanceFromCamera - b.distanceFromCamera;
+            return a.zDistance - b.zDistance;
         });
 
         for (var i = objectsToDraw.length - 1; i >= 0; i--) {
