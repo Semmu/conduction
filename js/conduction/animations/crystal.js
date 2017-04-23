@@ -4,7 +4,7 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
     animation.description = "This interactive animation shows the crystal structure of various materials used in microchip manufacturing.";
 
     var Spheres = [];
-    animation.autoRotate = true;
+    animation.autoRotate = false;
     var objectsToDraw = [];
 
     var Grid = {
@@ -59,7 +59,8 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
                 var projection = absolutePosition.getProjection();
 
                 Sphere.Graphics.beginFill(Sphere.Color);
-                Sphere.Graphics.drawCircle(projection.x, projection.y, ddd.getProjectedDistance(SPHERE_SIZE, absolutePosition.distanceFromCamera() - SPHERE_SIZE / 2));
+                Sphere.Graphics.lineStyle(2, 0x000000, 1);
+                Sphere.Graphics.drawCircle(projection.x, projection.y, ddd.getProjectedDistance(SPHERE_SIZE, absolutePosition.distanceFromCamera()));
                 Sphere.Graphics.endFill();
             }
         };
@@ -102,7 +103,7 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
                 var absolutePosition = Line.getAbsolutePosition();
                 Line.Graphics.clear();
                 Line.Graphics.moveTo(absolutePosition.From.getProjection().x, absolutePosition.From.getProjection().y);
-                Line.Graphics.lineStyle(1, 0x000000, 1);
+                Line.Graphics.lineStyle(2, 0x000000, 1);
                 Line.Graphics.lineTo(absolutePosition.To.getProjection().x, absolutePosition.To.getProjection().y);
             }
         };
@@ -181,12 +182,12 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
                     {
                         var lx = Line(
                             ddd.Vector(
-                                (x+1 + ((SPHERE_SIZE/2) / SPHERE_GAP) * 0.9) * SPHERE_GAP - (0.5 * SIZE * SPHERE_GAP) - (0.5 * SPHERE_GAP),
+                                (x+1 + (SPHERE_SIZE/2) / SPHERE_GAP) * SPHERE_GAP - (0.5 * SIZE * SPHERE_GAP) - (0.5 * SPHERE_GAP),
                                 (y+1) * SPHERE_GAP - (0.5 * SIZE * SPHERE_GAP) - (0.5 * SPHERE_GAP),
                                 (z+1) * SPHERE_GAP - (0.5 * SIZE * SPHERE_GAP) - (0.5 * SPHERE_GAP)
                             ),
                             ddd.Vector(
-                                (x+2 - ((SPHERE_SIZE/2) / SPHERE_GAP) * 0.9) * SPHERE_GAP - (0.5 * SIZE * SPHERE_GAP) - (0.5 * SPHERE_GAP),
+                                (x+2 - (SPHERE_SIZE/2) / SPHERE_GAP) * SPHERE_GAP - (0.5 * SIZE * SPHERE_GAP) - (0.5 * SPHERE_GAP),
                                 (y+1) * SPHERE_GAP - (0.5 * SIZE * SPHERE_GAP) - (0.5 * SPHERE_GAP),
                                 (z+1) * SPHERE_GAP - (0.5 * SIZE * SPHERE_GAP) - (0.5 * SPHERE_GAP)
                             )
@@ -201,12 +202,12 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
                         var ly = Line(
                             ddd.Vector(
                                 (x+1) * SPHERE_GAP - (0.5 * SIZE * SPHERE_GAP) - (0.5 * SPHERE_GAP),
-                                (y+1 + ((SPHERE_SIZE/2) / SPHERE_GAP) * 0.9) * SPHERE_GAP - (0.5 * SIZE * SPHERE_GAP) - (0.5 * SPHERE_GAP),
+                                (y+1 + (SPHERE_SIZE/2) / SPHERE_GAP) * SPHERE_GAP - (0.5 * SIZE * SPHERE_GAP) - (0.5 * SPHERE_GAP),
                                 (z+1) * SPHERE_GAP - (0.5 * SIZE * SPHERE_GAP) - (0.5 * SPHERE_GAP)
                             ),
                             ddd.Vector(
                                 (x+1) * SPHERE_GAP - (0.5 * SIZE * SPHERE_GAP) - (0.5 * SPHERE_GAP),
-                                (y+2 - ((SPHERE_SIZE/2) / SPHERE_GAP) * 0.9) * SPHERE_GAP - (0.5 * SIZE * SPHERE_GAP) - (0.5 * SPHERE_GAP),
+                                (y+2 - (SPHERE_SIZE/2) / SPHERE_GAP) * SPHERE_GAP - (0.5 * SIZE * SPHERE_GAP) - (0.5 * SPHERE_GAP),
                                 (z+1) * SPHERE_GAP - (0.5 * SIZE * SPHERE_GAP) - (0.5 * SPHERE_GAP)
                             )
                         );
@@ -221,12 +222,12 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
                             ddd.Vector(
                                 (x+1) * SPHERE_GAP - (0.5 * SIZE * SPHERE_GAP) - (0.5 * SPHERE_GAP),
                                 (y+1) * SPHERE_GAP - (0.5 * SIZE * SPHERE_GAP) - (0.5 * SPHERE_GAP),
-                                (z+1 + ((SPHERE_SIZE/2) / SPHERE_GAP) * 0.9) * SPHERE_GAP - (0.5 * SIZE * SPHERE_GAP) - (0.5 * SPHERE_GAP)
+                                (z+1 + (SPHERE_SIZE/2) / SPHERE_GAP) * SPHERE_GAP - (0.5 * SIZE * SPHERE_GAP) - (0.5 * SPHERE_GAP)
                             ),
                             ddd.Vector(
                                 (x+1) * SPHERE_GAP - (0.5 * SIZE * SPHERE_GAP) - (0.5 * SPHERE_GAP),
                                 (y+1) * SPHERE_GAP - (0.5 * SIZE * SPHERE_GAP) - (0.5 * SPHERE_GAP),
-                                (z+2 - ((SPHERE_SIZE/2) / SPHERE_GAP) * 0.9) * SPHERE_GAP - (0.5 * SIZE * SPHERE_GAP) - (0.5 * SPHERE_GAP)
+                                (z+2 - (SPHERE_SIZE/2) / SPHERE_GAP) * SPHERE_GAP - (0.5 * SIZE * SPHERE_GAP) - (0.5 * SPHERE_GAP)
                             )
                         );
 

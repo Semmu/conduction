@@ -8,7 +8,8 @@ define(['./util'], function(util) {
         },
 
         getProjectedDistance: function(length, distance) {
-            var ratio = ddd.Camera.DEPTH / (distance + ddd.Camera.DEPTH);
+            var ratio = Math.pow(ddd.Camera.DEPTH / (distance + ddd.Camera.DEPTH - length), 0.8);
+            //var ratio = ddd.Camera.DEPTH / (distance + ddd.Camera.DEPTH);
 
             return length * ratio;
         },
