@@ -21,7 +21,8 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
         }
     };
 
-    var SPHERE_SIZE = 30;
+    var SPHERE_SIZE = 50;
+    var SPHERE_GAP = 80;
 
     var Sphere = function(x, y, z) {
 
@@ -64,28 +65,28 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
 
         var Line = {
             Graphics: new PIXI.Graphics(),
-            From: ddd.Vector(from[0], from[1], from[2]),
-            To: ddd.Vector(to[0], to[1], to[2]),
+            From: ddd.Vector(from.x, from.y, from.z),
+            To: ddd.Vector(to.x, to.y, to.z),
+
+            getAbsolutePosition: function() {
+                return {
+                    From: Grid.Position.add(Line.From.transform(Grid.Axes.x, Grid.Axes.y, Grid.Axes.z)),
+                    To: Grid.Position.add(Line.To.transform(Grid.Axes.x, Grid.Axes.y, Grid.Axes.z))
+                };
+            },
+
+            distanceFromCamera: function() {
+                var absolutePosition = Line.getAbsolutePosition();
+                var middle = absolutePosition.From.add(absolutePosition.To).scale(0.5);
+                return middle.distanceFromCamera();
+            },
 
             draw: function() {
-
-                var absoluteFrom = Grid.Position.add(
-                    Line.From.transform(
-                        Grid.Axes.x,
-                        Grid.Axes.y,
-                        Grid.Axes.z
-                ));
-                var absoluteTo = Grid.Position.add(
-                    Line.To.transform(
-                        Grid.Axes.x,
-                        Grid.Axes.y,
-                        Grid.Axes.z
-                ));
-
+                var absolutePosition = Line.getAbsolutePosition();
                 Line.Graphics.clear();
-                Line.Graphics.moveTo(absoluteFrom.getProjection().x, absoluteFrom.getProjection().y);
+                Line.Graphics.moveTo(absolutePosition.From.getProjection().x, absolutePosition.From.getProjection().y);
                 Line.Graphics.lineStyle(1, 0x000000, 1);
-                Line.Graphics.lineTo(absoluteTo.getProjection().x, absoluteTo.getProjection().y);
+                Line.Graphics.lineTo(absolutePosition.To.getProjection().x, absolutePosition.To.getProjection().y);
             }
         };
 
@@ -147,17 +148,74 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
 
         animation.scene.addChild(draggableOverlay);
 
-        var SIZE = 5;
+        var SIZE = 3;
         for (var x = 0; x < SIZE; x++) {
             for (var y = 0; y < SIZE; y++) {
                 for (var z = 0; z < SIZE; z++) {
                     var s = Sphere(
-                        (x+1) * SPHERE_SIZE - (0.5 * SIZE * SPHERE_SIZE) - (0.5 * SPHERE_SIZE),
-                        (y+1) * SPHERE_SIZE - (0.5 * SIZE * SPHERE_SIZE) - (0.5 * SPHERE_SIZE),
-                        (z+1) * SPHERE_SIZE - (0.5 * SIZE * SPHERE_SIZE) - (0.5 * SPHERE_SIZE)
+                        (x+1) * SPHERE_GAP - (0.5 * SIZE * SPHERE_GAP) - (0.5 * SPHERE_GAP),
+                        (y+1) * SPHERE_GAP - (0.5 * SIZE * SPHERE_GAP) - (0.5 * SPHERE_GAP),
+                        (z+1) * SPHERE_GAP - (0.5 * SIZE * SPHERE_GAP) - (0.5 * SPHERE_GAP)
                     );
                     objectsToDraw.push(s);
                     animation.scene.addChild(s.Graphics);
+
+                    if (x != SIZE - 1)
+                    {
+                        var lx = Line(
+                            ddd.Vector(
+                                (x+1 + ((SPHERE_SIZE/2) / SPHERE_GAP) * 0.9) * SPHERE_GAP - (0.5 * SIZE * SPHERE_GAP) - (0.5 * SPHERE_GAP),
+                                (y+1) * SPHERE_GAP - (0.5 * SIZE * SPHERE_GAP) - (0.5 * SPHERE_GAP),
+                                (z+1) * SPHERE_GAP - (0.5 * SIZE * SPHERE_GAP) - (0.5 * SPHERE_GAP)
+                            ),
+                            ddd.Vector(
+                                (x+2 - ((SPHERE_SIZE/2) / SPHERE_GAP) * 0.9) * SPHERE_GAP - (0.5 * SIZE * SPHERE_GAP) - (0.5 * SPHERE_GAP),
+                                (y+1) * SPHERE_GAP - (0.5 * SIZE * SPHERE_GAP) - (0.5 * SPHERE_GAP),
+                                (z+1) * SPHERE_GAP - (0.5 * SIZE * SPHERE_GAP) - (0.5 * SPHERE_GAP)
+                            )
+                        );
+
+                        objectsToDraw.push(lx);
+                        animation.scene.addChild(lx.Graphics);
+                    }
+
+                    if (y != SIZE - 1)
+                    {
+                        var ly = Line(
+                            ddd.Vector(
+                                (x+1) * SPHERE_GAP - (0.5 * SIZE * SPHERE_GAP) - (0.5 * SPHERE_GAP),
+                                (y+1 + ((SPHERE_SIZE/2) / SPHERE_GAP) * 0.9) * SPHERE_GAP - (0.5 * SIZE * SPHERE_GAP) - (0.5 * SPHERE_GAP),
+                                (z+1) * SPHERE_GAP - (0.5 * SIZE * SPHERE_GAP) - (0.5 * SPHERE_GAP)
+                            ),
+                            ddd.Vector(
+                                (x+1) * SPHERE_GAP - (0.5 * SIZE * SPHERE_GAP) - (0.5 * SPHERE_GAP),
+                                (y+2 - ((SPHERE_SIZE/2) / SPHERE_GAP) * 0.9) * SPHERE_GAP - (0.5 * SIZE * SPHERE_GAP) - (0.5 * SPHERE_GAP),
+                                (z+1) * SPHERE_GAP - (0.5 * SIZE * SPHERE_GAP) - (0.5 * SPHERE_GAP)
+                            )
+                        );
+
+                        objectsToDraw.push(ly);
+                        animation.scene.addChild(ly.Graphics);
+                    }
+
+                    if (z != SIZE - 1)
+                    {
+                        var lz = Line(
+                            ddd.Vector(
+                                (x+1) * SPHERE_GAP - (0.5 * SIZE * SPHERE_GAP) - (0.5 * SPHERE_GAP),
+                                (y+1) * SPHERE_GAP - (0.5 * SIZE * SPHERE_GAP) - (0.5 * SPHERE_GAP),
+                                (z+1 + ((SPHERE_SIZE/2) / SPHERE_GAP) * 0.9) * SPHERE_GAP - (0.5 * SIZE * SPHERE_GAP) - (0.5 * SPHERE_GAP)
+                            ),
+                            ddd.Vector(
+                                (x+1) * SPHERE_GAP - (0.5 * SIZE * SPHERE_GAP) - (0.5 * SPHERE_GAP),
+                                (y+1) * SPHERE_GAP - (0.5 * SIZE * SPHERE_GAP) - (0.5 * SPHERE_GAP),
+                                (z+2 - ((SPHERE_SIZE/2) / SPHERE_GAP) * 0.9) * SPHERE_GAP - (0.5 * SIZE * SPHERE_GAP) - (0.5 * SPHERE_GAP)
+                            )
+                        );
+
+                        objectsToDraw.push(lz);
+                        animation.scene.addChild(lz.Graphics);
+                    }
                 }
             }
         }
