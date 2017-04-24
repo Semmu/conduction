@@ -3,7 +3,7 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
     animation.name = "Crystal Structure";
     animation.description = "This animation shows the 3D crystal structure of various materials used in microchip manufacturing.";
 
-    var autoRotate = false;
+    var autoRotate = true;
     var rotateSpeed = 3;
 
     var materials = [

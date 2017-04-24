@@ -8,17 +8,21 @@
             "lineWidth": 0.05,
             "lineColor": "0x000000"
         },
-        "Red": {
-            "size": 1,
-            "color": "0xff4444",
-            "lineWidth": 0.05,
-            "lineColor": "0x000000"
+        "Edge": {
+            "size": 0.1,
+            "color": "0x44aaff",
+            "lineWidth": 0,
+            "lineColor": "0x44aaff"
         }
     },
     "connectionTypes" : {
         "normal": {
             "width": 0.05,
             "color": "0x000000"
+        },
+        "edge": {
+            "width": 0.03,
+            "color": "0xaaccff"
         }
     },
     "atoms": [
@@ -39,7 +43,12 @@
 
         { "type": "Silicon",    "position": [0, 4, 4] },
         { "type": "Silicon",    "position": [2, 4, 2] },
-        { "type": "Silicon",    "position": [4, 4, 0] }
+        { "type": "Silicon",    "position": [4, 4, 0] },
+
+        { "type": "Edge",       "position": [4, 0, 0] },
+        { "type": "Edge",       "position": [0, 4, 0] },
+        { "type": "Edge",       "position": [0, 0, 4] },
+        { "type": "Edge",       "position": [4, 4, 4] }
     ],
     "connections": [
         { "type": "normal", "from": 0, "to": 1 },
@@ -60,6 +69,22 @@
         { "type": "normal", "from": 7, "to": 10 },
         { "type": "normal", "from": 7, "to": 2 },
         { "type": "normal", "from": 7, "to": 9 },
-        { "type": "normal", "from": 7, "to": 8 }
+        { "type": "normal", "from": 7, "to": 8 },
+
+        { "type": "edge", "from": 1, "to": 14 },
+        { "type": "edge", "from": 1, "to": 15 },
+        { "type": "edge", "from": 1, "to": 16 },
+
+        { "type": "edge", "from": 8, "to": 14 },
+        { "type": "edge", "from": 8, "to": 17 },
+        { "type": "edge", "from": 8, "to": 16 },
+
+        { "type": "edge", "from": 11, "to": 15 },
+        { "type": "edge", "from": 11, "to": 17 },
+        { "type": "edge", "from": 11, "to": 16 },
+
+        { "type": "edge", "from": 13, "to": 15 },
+        { "type": "edge", "from": 13, "to": 14 },
+        { "type": "edge", "from": 13, "to": 17 }
     ]
 }
