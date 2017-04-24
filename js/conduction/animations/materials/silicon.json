@@ -1,0 +1,16 @@
+{
+    "types": [
+        {
+            "name": "Silicon",
+            "size": 10.0,
+            "color": "0x555555"
+        }
+    ],
+    "atoms": [
+        {
+            "type": "Silicon",
+            "positions": [ [0, 0, 0], [1, 0, 1], [0, 1, 1], [1, 1, 0] ]
+        }
+    ],
+    "connections": []
+}
