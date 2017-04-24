@@ -3,12 +3,8 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
     animation.name = "Crystal Structure";
     animation.description = "This animation shows the 3D crystal structure of various materials used in microchip manufacturing.";
 
-    var autoRotate = true;
+    var autoRotate = false;
     var rotateSpeed = 3;
-
-    var SPHERE_SIZE = 30;
-    var SPHERE_GAP = 60;
-    var SIZE = 4;
 
     var materials = [
         { text: 'Silicon',  value: 'silicon' }
@@ -17,6 +13,7 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
     var objectsToDraw = [];
 
     var Grid = {
+        Scale: 1,
         Position: ddd.Vector(0, 0, 0),
         Axes: {
             x: ddd.Vector(1, 0, 0),
@@ -24,22 +21,30 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
             z: ddd.Vector(0, 0, 1)
         },
         rotate: function(flat, lean) {
-            Grid.Axes.x = Grid.Axes.x.rotate(ddd.Vector(0, 1, 0), flat).rotate(ddd.Vector(1, 0, 0), lean).setLength(1);
-            Grid.Axes.y = Grid.Axes.y.rotate(ddd.Vector(0, 1, 0), flat).rotate(ddd.Vector(1, 0, 0), lean).setLength(1);
-            Grid.Axes.z = Grid.Axes.z.rotate(ddd.Vector(0, 1, 0), flat).rotate(ddd.Vector(1, 0, 0), lean).setLength(1);
+            Grid.Axes.x = Grid.Axes.x.rotate(ddd.Vector(0, 1, 0), flat).rotate(ddd.Vector(1, 0, 0), lean).setLength(Grid.Scale);
+            Grid.Axes.y = Grid.Axes.y.rotate(ddd.Vector(0, 1, 0), flat).rotate(ddd.Vector(1, 0, 0), lean).setLength(Grid.Scale);
+            Grid.Axes.z = Grid.Axes.z.rotate(ddd.Vector(0, 1, 0), flat).rotate(ddd.Vector(1, 0, 0), lean).setLength(Grid.Scale);
+        },
+        scale: function(s) {
+            Grid.Scale = s;
+            Grid.rotate(0, 0);
         }
     };
 
 
-    var Sphere = function(x, y, z) {
+    var Sphere = function(pos, size, color, lineWidth, lineColor) {
 
         var Sphere = {
+            Position: pos,
+            Size: size,
+            Color: parseInt(color),
+            LineWidth: lineWidth,
+            LineColor: parseInt(lineColor),
+
             Graphics: new PIXI.Graphics(),
-            Position: ddd.Vector(x, y, z),
-            Color: util.randInt(0xffffff),
 
             getAbsolutePosition: function() {
-                return Grid.Position.add(
+                return Grid.Position.scale(Grid.Scale).add(
                     Sphere.Position.transform(
                         Grid.Axes.x,
                         Grid.Axes.y,
@@ -60,8 +65,8 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
                 var projection = absolutePosition.getProjection();
 
                 Sphere.Graphics.beginFill(Sphere.Color);
-                Sphere.Graphics.lineStyle(2, 0x000000, 1);
-                Sphere.Graphics.drawCircle(projection.x, projection.y, ddd.getProjectedDistance(SPHERE_SIZE, absolutePosition.distanceFromCamera()));
+                Sphere.Graphics.lineStyle(Sphere.LineWidth * Grid.Scale, Sphere.LineColor, 1);
+                Sphere.Graphics.drawCircle(projection.x, projection.y, ddd.getProjectedDistance(Sphere.Size * Grid.Scale, absolutePosition.distanceFromCamera()));
                 Sphere.Graphics.endFill();
             }
         };
@@ -71,12 +76,16 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
         return Sphere;
     }
 
-    var Line = function(from, to) {
+    var Line = function(from, to, width, color) {
 
         var Line = {
-            Graphics: new PIXI.Graphics(),
             From: ddd.Vector(from.x, from.y, from.z),
             To: ddd.Vector(to.x, to.y, to.z),
+
+            Color: parseInt(color),
+            Width: width,
+
+            Graphics: new PIXI.Graphics(),
 
             getAbsolutePosition: function() {
                 return {
@@ -96,7 +105,7 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
                 var absolutePosition = Line.getAbsolutePosition();
                 Line.Graphics.clear();
                 Line.Graphics.moveTo(absolutePosition.From.getProjection().x, absolutePosition.From.getProjection().y);
-                Line.Graphics.lineStyle(2, 0x000000, 1);
+                Line.Graphics.lineStyle(Line.Width * Grid.Scale, Line.Color, 1);
                 Line.Graphics.lineTo(absolutePosition.To.getProjection().x, absolutePosition.To.getProjection().y);
             }
         };
@@ -142,9 +151,11 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
     }
 
     draggableOverlay.onDragEnd = function() {
-        autoRotate = this.data.autoRotate;
-        this.dragging = false;
-        this.data = null;
+        if (this.dragging) {
+            autoRotate = this.data.autoRotate;
+            this.dragging = false;
+            this.data = null;
+        }
     }
 
     draggableOverlay.interactive = true;
@@ -152,6 +163,7 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
     draggableOverlay.defaultCursor = "pointer";
 
     draggableOverlay.on('pointerdown', draggableOverlay.onDragStart)
+    .on('pointerupoutside', draggableOverlay.onDragEnd)
     .on('pointerup', draggableOverlay.onDragEnd)
     .on('pointermove', draggableOverlay.onDragMove);
 
@@ -165,21 +177,48 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
 
     animation.loadMaterial = function(material) {
 
-        // mime-type override needed
-        // from: https://stackoverflow.com/a/4234006/1576667
-
         $.ajax({
             url: './js/conduction/animations/materials/'+material+'.json',
             beforeSend: function(xhr){
                 if (xhr.overrideMimeType)
                 {
+                    // mime-type override needed
+                    // from: https://stackoverflow.com/a/4234006/1576667
                     xhr.overrideMimeType("application/json");
                 }
             },
             dataType: 'json',
             data: null,
             success: function(data) {
-                console.log(data);
+
+                Grid.scale(data.scale);
+                var translation = ddd.Vector(data.center[0], data.center[1], data.center[2]).scale(-1);
+
+                for (var i = 0; i < data.atoms.length; i++) {
+                    var position = data.atoms[i].position;
+                    var typeDetails = data.types[data.atoms[i].type];
+                    var posVector = ddd.Vector(position[0], position[1], position[2]);
+
+                    objectsToDraw.push(Sphere(translation.add(posVector), typeDetails.size, typeDetails.color, typeDetails.lineWidth, typeDetails.lineColor));
+                }
+
+                for (var i = 0; i < data.connections.length; i++) {
+                    var c = data.connections[i];
+                    var details = data.connectionTypes[c.type];
+
+                    var fromCenter = ddd.Vector(data.atoms[c.from].position[0], data.atoms[c.from].position[1], data.atoms[c.from].position[2]);
+                    var toCenter = ddd.Vector(data.atoms[c.to].position[0], data.atoms[c.to].position[1], data.atoms[c.to].position[2]);
+
+                    var fromRadius = data.types[data.atoms[c.from].type].size / 2;
+                    var toRadius = data.types[data.atoms[c.to].type].size / 2;
+
+                    var direction = toCenter.add(fromCenter.scale(-1));
+
+                    var fromTouching = fromCenter.add(direction.setLength(fromRadius));
+                    var toTouching = toCenter.add(direction.scale(-1).setLength(toRadius));
+
+                    objectsToDraw.push(Line(translation.add(fromTouching), translation.add(toTouching), details.width, details.color));
+                }
             }
         });
     }
