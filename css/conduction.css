@@ -4,8 +4,6 @@ body { background: #eee; }
 
 #animation_description { white-space: pre-line; }
 
-#animation_settings { padding-right: 20px; }
-
     #animation_settings .control_wrapper { margin: 10px 0px; }
 
     #animation_settings p { margin: 0px 0px -10px; font-size: 11px; line-height: 16px; color: #999;}

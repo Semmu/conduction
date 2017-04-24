@@ -74,6 +74,7 @@ define(['./util'], function(util) {
             require(['conduction/animations/' + name], function(animation) {
                 animationModule = animation;
                 functions.initializeAnimation();
+                $('#animation_select').val(name);
             });
 
             // to force reload the sources every time we switch animation
