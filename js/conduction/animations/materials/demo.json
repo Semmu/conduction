@@ -1,0 +1,71 @@
+{
+    "scale": 30,
+    "center": [ 0, 0, 0 ],
+    "types": {
+        "Blue": {
+            "size": 2,
+            "color": "0x2255ff",
+            "lineWidth": 0.1,
+            "lineColor": "0x0000cc"
+        },
+        "Green": {
+            "size": 1,
+            "color": "0x44ccaa",
+            "lineWidth": 0,
+            "lineColor": "0x44ccaa"
+        },
+        "Red": {
+            "size": 0.3,
+            "color": "0xaa3344",
+            "lineWidth": 0.07,
+            "lineColor": "0xff0000"
+        }
+    },
+    "connectionTypes" : {
+        "green": {
+            "width": 0.15,
+            "color": "0x44ccaa"
+        },
+        "red": {
+            "width": 0.07,
+            "color": "0xff0000"
+        }
+    },
+    "atoms": [
+        { "type": "Blue",    "position": [-1, 0, -1] },
+        { "type": "Blue",    "position": [-1, 0, 1] },
+        { "type": "Blue",    "position": [1, 0, 1] },
+        { "type": "Blue",    "position": [1, 0, -1] },
+
+        { "type": "Green",       "position": [5, 0, 0] },
+        { "type": "Green",       "position": [-5, 0, 0] },
+        { "type": "Green",       "position": [0, 0, -5] },
+        { "type": "Green",       "position": [0, 0, 5] },
+
+        { "type": "Red",       "position": [0, 4, 0] },
+        { "type": "Red",       "position": [0, -4, 0] }
+    ],
+    "connections": [
+        { "type": "green", "from": 0, "to": 5 },
+        { "type": "green", "from": 1, "to": 5 },
+
+        { "type": "green", "from": 1, "to": 7 },
+        { "type": "green", "from": 2, "to": 7 },
+
+        { "type": "green", "from": 0, "to": 6 },
+        { "type": "green", "from": 3, "to": 6 },
+
+        { "type": "green", "from": 3, "to": 4 },
+        { "type": "green", "from": 2, "to": 4 },
+
+        { "type": "red", "from": 4, "to": 8 },
+        { "type": "red", "from": 5, "to": 8 },
+        { "type": "red", "from": 6, "to": 8 },
+        { "type": "red", "from": 7, "to": 8 },
+
+        { "type": "red", "from": 4, "to": 9 },
+        { "type": "red", "from": 5, "to": 9 },
+        { "type": "red", "from": 6, "to": 9 },
+        { "type": "red", "from": 7, "to": 9 },
+    ]
+}
