@@ -7,7 +7,8 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
     var rotateSpeed = 3;
 
     var materials = [
-        { text: 'Silicon',  value: 'silicon' }
+        { text: 'Silicon'                                   , value: 'silicon' },
+        { text: '[techdemo] Multiple atoms and connections' , value: 'demo' }
     ];
 
     var objectsToDraw = [];
@@ -31,6 +32,20 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
         }
     };
 
+    var Text = function(text, settings) {
+
+        var Text = {
+            Graphics: new PIXI.Text(text, settings),
+            zDistance: 0,
+            computeZDistance: function() {},
+            draw: function() {}
+        };
+
+        Text.Graphics.x = Text.Graphics.width / -2;
+        Text.Graphics.y = Text.Graphics.height / -2;
+
+        return Text;
+    }
 
     var Sphere = function(pos, size, color, lineWidth, lineColor) {
 
@@ -177,6 +192,14 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
 
     animation.loadMaterial = function(material) {
 
+        objectsToDraw = [];
+        Grid.scale(1);
+        Grid.Axes = {
+            x: ddd.Vector(1, 0, 0),
+            y: ddd.Vector(0, 1, 0),
+            z: ddd.Vector(0, 0, 1)
+        };
+
         $.ajax({
             url: './js/conduction/animations/materials/'+material+'.json',
             beforeSend: function(xhr){
@@ -219,6 +242,12 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
 
                     objectsToDraw.push(Line(translation.add(fromTouching), translation.add(toTouching), details.width, details.color));
                 }
+            },
+            error: function() {
+                objectsToDraw.push(Text('Could not load material file!\n('+material+'.json)', new PIXI.TextStyle({
+                    fill: '#aa0000',
+                    align: 'center'
+                })));
             }
         });
     }
@@ -226,14 +255,10 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
     var renderStart, renderEnd;
 
     animation.onRender = function() {
-
-        renderStart = performance.now();
-
         animation.scene.removeChildren();
 
         if (autoRotate)
             Grid.rotate(rotateSpeed / 1000, 0);
-
 
         for (var i = objectsToDraw.length - 1; i >= 0; i--) {
             objectsToDraw[i].computeZDistance();
@@ -249,9 +274,6 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
         }
 
         animation.scene.addChild(draggableOverlay);
-
-        renderEnd = performance.now();
-        // console.log(renderEnd - renderStart);
     }
 
     animation.settings = [
