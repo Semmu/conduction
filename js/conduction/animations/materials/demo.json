@@ -66,6 +66,6 @@
         { "type": "red", "from": 4, "to": 9 },
         { "type": "red", "from": 5, "to": 9 },
         { "type": "red", "from": 6, "to": 9 },
-        { "type": "red", "from": 7, "to": 9 },
+        { "type": "red", "from": 7, "to": 9 }
     ]
 }
