@@ -25,7 +25,8 @@ define(['./util'], function(util) {
                 DOMcontainer.width(),
                 DOMcontainer.height(),
                 {
-                    transparent: true
+                    transparent: true,
+                    antialias: true
                 }
             );
 
