@@ -45,7 +45,7 @@ define(['../animation_base', '../controls'], function(animation, controls) {
     var DIODE_HEIGHT = 30;
     var CANVAS_WIDTH = 400;
     var CANVAS_HEIGHT = 300;
-    var CANVAS_ELEVATION = 20;
+    var CANVAS_ELEVATION = 0;
 
     var Drawable = function() {
         var Drawable = {
@@ -105,26 +105,27 @@ define(['../animation_base', '../controls'], function(animation, controls) {
     diodeRects = DiodeRects();
 
     var Ground = function() {
-        var POSITION = {
+        var Ground = Drawable();
+
+        Ground.POSITION = {
             x: 180.0,
             y: 40.0
         }
-        var WIDTH = 20.0;
-        var HEIGHT = 10.0;
-        var LINES = 4;
+        Ground.WIDTH = 20.0;
+        Ground.HEIGHT = 10.0;
+        Ground.LINES = 4;
 
-        var Ground = Drawable();
 
         Ground.draw = function() {
             Ground.Graphics.clear();
             Ground.Graphics.lineStyle(1, 0x000000, 1);
 
-            for (var i = 0; i < LINES; i++) {
-                var y = POSITION.y + HEIGHT / LINES * i - HEIGHT / 2;
-                var diff = WIDTH / 2.0 / LINES * i;
+            for (var i = 0; i < Ground.LINES; i++) {
+                var y = Ground.POSITION.y + Ground.HEIGHT / Ground.LINES * i - Ground.HEIGHT / 2;
+                var diff = Ground.WIDTH / 2.0 / Ground.LINES * i;
 
-                Ground.Graphics.moveTo(POSITION.x + diff - WIDTH / 2, y);
-                Ground.Graphics.lineTo(POSITION.x + WIDTH / 2 - diff, y);
+                Ground.Graphics.moveTo(Ground.POSITION.x + diff - Ground.WIDTH / 2, y);
+                Ground.Graphics.lineTo(Ground.POSITION.x + Ground.WIDTH / 2 - diff, y);
             }
         }
 
@@ -132,17 +133,64 @@ define(['../animation_base', '../controls'], function(animation, controls) {
     }
     ground = Ground();
 
+    var AClogo = function() {
+        var AClogo = Drawable();
+
+        AClogo.POSITION = {
+            x: -180.0,
+            y: 0.0
+        }
+        AClogo.RADIUS = 10.0;
+
+
+        AClogo.draw = function() {
+            AClogo.Graphics.clear();
+
+            AClogo.Graphics.lineStyle(1, 0x000000, 1);
+            AClogo.Graphics.drawCircle(AClogo.POSITION.x, AClogo.POSITION.y, AClogo.RADIUS);
+            AClogo.Graphics.arc(AClogo.POSITION.x + AClogo.RADIUS/3, AClogo.POSITION.y, AClogo.RADIUS/3, 0, Math.PI);
+            AClogo.Graphics.arc(AClogo.POSITION.x - AClogo.RADIUS/3, AClogo.POSITION.y, AClogo.RADIUS/3, 0, Math.PI, true);
+        }
+
+        return AClogo;
+    }
+    aclogo = AClogo();
+
+    var OtherLines = function() {
+        var OtherLines = Drawable();
+
+        OtherLines.draw = function() {
+            OtherLines.Graphics.clear();
+
+            OtherLines.Graphics.lineStyle(1, 0x000000, 1);
+
+            OtherLines.Graphics.moveTo(DIODE_WIDTH/2, 0);
+            OtherLines.Graphics.lineTo(ground.POSITION.x, 0);
+            OtherLines.Graphics.lineTo(ground.POSITION.x, ground.POSITION.y - ground.HEIGHT / 2);
+
+            OtherLines.Graphics.moveTo(-DIODE_WIDTH/2, 0);
+            OtherLines.Graphics.lineTo(aclogo.POSITION.x + aclogo.RADIUS, 0);
+        }
+
+        return OtherLines;
+    }
+    var otherLines = OtherLines();
+
     animation.onLoad = function() {
 
         canvasRect.draw();
         diodeLines.draw();
         diodeRects.draw();
         ground.draw();
+        aclogo.draw();
+        otherLines.draw();
 
         animation.scene.addChild(canvasRect.Graphics);
         animation.scene.addChild(diodeRects.Graphics);
         animation.scene.addChild(diodeLines.Graphics);
         animation.scene.addChild(ground.Graphics);
+        animation.scene.addChild(aclogo.Graphics);
+        animation.scene.addChild(otherLines.Graphics);
     }
 
     animation.onRender = function() {
