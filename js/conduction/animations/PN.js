@@ -4,8 +4,7 @@ define(['../animation_base', '../controls'], function(animation, controls) {
     animation.description = 'This interactive animation shows a band diagram for a PN junction diode under bias.';
 
     var settings = {
-        voltage: 0.0,
-        fillRatio: 0.6,
+        voltage: 0.6,
 
         leakage: true,
         injection: true,
@@ -13,32 +12,6 @@ define(['../animation_base', '../controls'], function(animation, controls) {
 
         electrons: true,
         holes: true
-    };
-
-    var callbacks = {
-        setVoltage: function(val) {
-            console.log('voltage changed to ' + val);
-        },
-
-        setLeakage: function(val) {
-            console.log('leakage set to ' + val);
-        },
-
-        setInjection: function(val) {
-            console.log('injection set to ' + val);
-        },
-
-        setRecombination: function(val) {
-            console.log('recombination set to ' + val);
-        },
-
-        setElectrons: function(val) {
-            console.log('electrons set to ' + val);
-        },
-
-        setHoles: function(val) {
-            console.log('holes set to ' + val);
-        }
     };
 
     var DIODE_WIDTH = 300;
@@ -92,11 +65,11 @@ define(['../animation_base', '../controls'], function(animation, controls) {
             DiodeRects.Graphics.clear();
 
             DiodeRects.Graphics.beginFill(0xff0000);
-            DiodeRects.Graphics.drawRect(-DIODE_WIDTH/2, -DIODE_HEIGHT/2, DIODE_WIDTH/2*settings.fillRatio, DIODE_HEIGHT);
+            DiodeRects.Graphics.drawRect(-DIODE_WIDTH/2, -DIODE_HEIGHT/2, DIODE_WIDTH/2*settings.voltage, DIODE_HEIGHT);
             DiodeRects.Graphics.endFill();
 
             DiodeRects.Graphics.beginFill(0x0000ff);
-            DiodeRects.Graphics.drawRect(DIODE_WIDTH/2*(1-settings.fillRatio), -DIODE_HEIGHT/2, (DIODE_WIDTH/2) - DIODE_WIDTH/2*(1-settings.fillRatio), DIODE_HEIGHT);
+            DiodeRects.Graphics.drawRect(DIODE_WIDTH/2*(1-settings.voltage), -DIODE_HEIGHT/2, (DIODE_WIDTH/2) - DIODE_WIDTH/2*(1-settings.voltage), DIODE_HEIGHT);
             DiodeRects.Graphics.endFill();
         }
 
@@ -176,6 +149,33 @@ define(['../animation_base', '../controls'], function(animation, controls) {
     }
     var otherLines = OtherLines();
 
+    var callbacks = {
+        setVoltage: function(val) {
+            console.log('voltage changed to ' + val);
+            settings.voltage = val;
+            diodeRects.draw();
+        },
+
+        setLeakage: function(val) {
+            console.log('leakage set to ' + val);
+        },
+
+        setInjection: function(val) {
+            console.log('injection set to ' + val);
+        },
+
+        setRecombination: function(val) {
+            console.log('recombination set to ' + val);
+        },
+
+        setElectrons: function(val) {
+            console.log('electrons set to ' + val);
+        },
+
+        setHoles: function(val) {
+            console.log('holes set to ' + val);
+        }
+    };
     animation.onLoad = function() {
 
         canvasRect.draw();
@@ -200,7 +200,7 @@ define(['../animation_base', '../controls'], function(animation, controls) {
 
     animation.settings = [
         controls.Text('Voltage'),
-        controls.Range(settings.voltage, -5, 0.1, 5, callbacks.setVoltage),
+        controls.Range(settings.voltage, 0, 0.01, 1, callbacks.setVoltage),
         controls.Text('Particle types'),
         controls.Checkbox('Electrons', settings.electrons, callbacks.setElectrons),
         controls.Checkbox('Holes', settings.holes, callbacks.setHoles),
