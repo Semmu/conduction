@@ -148,11 +148,12 @@ define(['./util'], function(util) {
             control.create = function() {
                 var range = $('<input>', {
                     type: 'range',
-                    value: value,
                     min: min,
                     max: max,
                     step: step
                 });
+
+                range.val(value);
 
                 range.on('input', function() {
                     callback(parseFloat(range.val()));
