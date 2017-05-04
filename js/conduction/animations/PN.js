@@ -1,4 +1,4 @@
-define(['../animation_base', '../controls'], function(animation, controls) {
+define(['../animation_base', '../controls', '../3D'], function(animation, controls, ddd) {
 
     animation.name = 'PN junction diode under bias';
     animation.description = 'This interactive animation shows a band diagram for a PN junction diode under bias.';
@@ -27,6 +27,40 @@ define(['../animation_base', '../controls'], function(animation, controls) {
         }
 
         return Drawable;
+    }
+
+    var Bezier = function(p1, p2, p3, p4, color, LOD) {
+
+        var Bezier = Drawable();
+
+        Bezier.p1 = p1;
+        Bezier.p2 = p2;
+        Bezier.p3 = p3;
+        Bezier.p4 = p4;
+        Bezier.color = color;
+
+        Bezier.LOD = (LOD ? LOD : 30);
+
+        Bezier.getPointAtT = function(t) {
+            return Bezier.p1.scale(Math.pow(1-t, 3)).add(
+                   Bezier.p2.scale(3*Math.pow(1-t, 2)*t).add(
+                   Bezier.p3.scale(3*(1-t)*Math.pow(t, 2)).add(
+                   Bezier.p4.scale(Math.pow(t, 3)))));
+        }
+
+        Bezier.draw = function() {
+            Bezier.Graphics.clear();
+            Bezier.Graphics.lineStyle(1, Bezier.color, 1);
+
+            for (var i = 0; i < Bezier.LOD; i++) {
+                var from = Bezier.getPointAtT(1.0 * i / Bezier.LOD);
+                var to = Bezier.getPointAtT(1.0 * (i+1) / Bezier.LOD);
+                Bezier.Graphics.moveTo(from.x, from.y);
+                Bezier.Graphics.lineTo(to.x, to.y);
+            }
+        }
+
+        return Bezier;
     }
 
     var CanvasRect = function() {
@@ -176,6 +210,14 @@ define(['../animation_base', '../controls'], function(animation, controls) {
             console.log('holes set to ' + val);
         }
     };
+
+
+    bezier = Bezier(ddd.Vector(-200, -100, 0),
+                    ddd.Vector(100, -150, 0),
+                    ddd.Vector(0, 150, 0),
+                    ddd.Vector(200, 100, 0),
+                    0xffff00);
+
     animation.onLoad = function() {
 
         canvasRect.draw();
@@ -184,6 +226,7 @@ define(['../animation_base', '../controls'], function(animation, controls) {
         ground.draw();
         aclogo.draw();
         otherLines.draw();
+        bezier.draw();
 
         animation.scene.addChild(canvasRect.Graphics);
         animation.scene.addChild(diodeRects.Graphics);
@@ -191,6 +234,7 @@ define(['../animation_base', '../controls'], function(animation, controls) {
         animation.scene.addChild(ground.Graphics);
         animation.scene.addChild(aclogo.Graphics);
         animation.scene.addChild(otherLines.Graphics);
+        animation.scene.addChild(bezier.Graphics);
     }
 
     animation.onRender = function() {
