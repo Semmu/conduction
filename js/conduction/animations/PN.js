@@ -45,34 +45,45 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
         return Drawable;
     }
 
-    var CanvasTexture = function(x, y, w, h) {
+    var CanvasTexture = function() {
         var CanvasTexture = Drawable();
 
-        CanvasTexture.canvas = document.createElement('canvas');
-        CanvasTexture.canvas.width = 10;
-        CanvasTexture.canvas.height = 10;
+        CanvasTexture.canvas = null;
 
-        CanvasTexture.x = x;
-        CanvasTexture.y = y;
-        CanvasTexture.w = w;
-        CanvasTexture.h = h;
+        CanvasTexture.x = null;
+        CanvasTexture.y = null;
+        CanvasTexture.width = null;
+        CanvasTexture.height = null;
+
+        CanvasTexture.createCanvas = function(width, height) {
+            CanvasTexture.canvas = document.createElement('canvas');
+            CanvasTexture.canvas.width = width;
+            CanvasTexture.canvas.height = height;
+        }
 
         CanvasTexture.drawOnCanvas = function() {
             var ctx = CanvasTexture.canvas.getContext('2d');
 
-            for (var x = 0; x < CanvasTexture.w; x++) {
-                for (var y = 0; y < CanvasTexture.h; y++) {
+            for (var x = 0; x < CanvasTexture.canvas.width; x++) {
+                for (var y = 0; y < CanvasTexture.canvas.height; y++) {
                     ctx.fillStyle = 'hsl(' + 360 * Math.random() + ', 50%, 50%)';
                     ctx.fillRect(x, y, 1, 1);
                 }
             }
         }
 
+        CanvasTexture.setPosition = function(x, y, width, height) {
+            CanvasTexture.x = x;
+            CanvasTexture.y = y;
+            CanvasTexture.width = width;
+            CanvasTexture.height = height;
+        }
+
         CanvasTexture.draw = function() {
             CanvasTexture.drawOnCanvas();
             CanvasTexture.Graphics = new PIXI.Sprite(PIXI.Texture.fromCanvas(CanvasTexture.canvas));
-            CanvasTexture.Graphics.width = CanvasTexture.w;
-            CanvasTexture.Graphics.height = CanvasTexture.h;
+            CanvasTexture.Graphics.width = CanvasTexture.width;
+            CanvasTexture.Graphics.height = CanvasTexture.height;
             CanvasTexture.Graphics.x = CanvasTexture.x;
             CanvasTexture.Graphics.y = CanvasTexture.y;
         }
@@ -319,7 +330,9 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
 
     animation.onLoad = function() {
 
-        var ctxt = CanvasTexture(0, 0, 20, 100);
+        var ctxt = CanvasTexture();
+        ctxt.createCanvas(3, 4);
+        ctxt.setPosition(-20, -20, 40, 70);
         ctxt.draw();
 
         canvasRect.draw();
