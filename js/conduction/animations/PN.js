@@ -42,12 +42,31 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
         return Drawable;
     }
 
-    var CanvasTexture = function() {
+    var CanvasTexture = function(x, y, w, h) {
         var CanvasTexture = Drawable();
+
+        CanvasTexture.canvas = document.createElement('canvas');
+        CanvasTexture.canvas.width = 100;
+        CanvasTexture.canvas.height = 100;
+
+        CanvasTexture.x = x;
+        CanvasTexture.y = y;
+        CanvasTexture.w = w;
+        CanvasTexture.h = h;
+
+        CanvasTexture.drawOnCanvas = function() {
+            var ctx = CanvasTexture.canvas.getContext('2d');
+            ctx.fillStyle = 'hsl(' + 360 * Math.random() + ', 50%, 50%)';
+            ctx.fillRect(0, 0, 100, 100);
+        }
 
         CanvasTexture.draw = function() {
             CanvasTexture.drawOnCanvas();
-            CanvasTexture.Graphics = new PIXI.Sprite(PIXI.Texture.fromCanvas(canvas));
+            CanvasTexture.Graphics = new PIXI.Sprite(PIXI.Texture.fromCanvas(CanvasTexture.canvas));
+            CanvasTexture.Graphics.width = CanvasTexture.w;
+            CanvasTexture.Graphics.height = CanvasTexture.h;
+            CanvasTexture.Graphics.x = CanvasTexture.x;
+            CanvasTexture.Graphics.y = CanvasTexture.y;
         }
 
         return CanvasTexture;
@@ -292,6 +311,9 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
 
     animation.onLoad = function() {
 
+        var ctxt = CanvasTexture(0, 0, 10, 10);
+        ctxt.draw();
+
         canvasRect.draw();
         diodeLines.draw();
         diodeRects.draw();
@@ -313,6 +335,7 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
         animation.scene.addChild(fieldLines.Graphics);
         animation.scene.addChild(topBezier.Graphics);
         animation.scene.addChild(bottomBezier.Graphics);
+        animation.scene.addChild(ctxt.Graphics);
     }
 
     animation.onRender = function() {
