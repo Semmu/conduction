@@ -1,5 +1,8 @@
 define(['../animation_base', '../controls', '../3D'], function(animation, controls, ddd) {
 
+    // csak debug miatt
+    PIXI.scaleModes.DEFAULT = PIXI.scaleModes.NEAREST;
+
     animation.name = 'PN junction diode under bias';
     animation.description = 'This interactive animation shows a band diagram for a PN junction diode under bias.';
 
@@ -46,8 +49,8 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
         var CanvasTexture = Drawable();
 
         CanvasTexture.canvas = document.createElement('canvas');
-        CanvasTexture.canvas.width = 100;
-        CanvasTexture.canvas.height = 100;
+        CanvasTexture.canvas.width = 10;
+        CanvasTexture.canvas.height = 10;
 
         CanvasTexture.x = x;
         CanvasTexture.y = y;
@@ -56,8 +59,13 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
 
         CanvasTexture.drawOnCanvas = function() {
             var ctx = CanvasTexture.canvas.getContext('2d');
-            ctx.fillStyle = 'hsl(' + 360 * Math.random() + ', 50%, 50%)';
-            ctx.fillRect(0, 0, 100, 100);
+
+            for (var x = 0; x < CanvasTexture.w; x++) {
+                for (var y = 0; y < CanvasTexture.h; y++) {
+                    ctx.fillStyle = 'hsl(' + 360 * Math.random() + ', 50%, 50%)';
+                    ctx.fillRect(x, y, 1, 1);
+                }
+            }
         }
 
         CanvasTexture.draw = function() {
@@ -311,7 +319,7 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
 
     animation.onLoad = function() {
 
-        var ctxt = CanvasTexture(0, 0, 10, 10);
+        var ctxt = CanvasTexture(0, 0, 20, 100);
         ctxt.draw();
 
         canvasRect.draw();
