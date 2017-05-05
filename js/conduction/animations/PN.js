@@ -19,6 +19,7 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
     var CANVAS_WIDTH = 400;
     var CANVAS_HEIGHT = 300;
     var CANVAS_ELEVATION = 0;
+    var DIODE_ELEVATION = 100;
 
     var Drawable = function() {
         var Drawable = {
@@ -69,7 +70,7 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
         CanvasRect.draw = function() {
             CanvasRect.Graphics.clear();
 
-            CanvasRect.Graphics.beginFill(0x00cc44);
+            CanvasRect.Graphics.beginFill(0xddffff);
             CanvasRect.Graphics.drawRect(-CANVAS_WIDTH/2,-CANVAS_HEIGHT/2 - CANVAS_ELEVATION,CANVAS_WIDTH,CANVAS_HEIGHT);
             CanvasRect.Graphics.endFill();
         }
@@ -84,9 +85,9 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
         DiodeLines.draw = function() {
             DiodeLines.Graphics.clear();
             DiodeLines.Graphics.lineStyle(1, 0x000000, 1);
-            DiodeLines.Graphics.moveTo(0, -DIODE_HEIGHT/2);
-            DiodeLines.Graphics.lineTo(0, DIODE_HEIGHT/2);
-            DiodeLines.Graphics.drawRect(-DIODE_WIDTH/2, -DIODE_HEIGHT/2, DIODE_WIDTH, DIODE_HEIGHT);
+            DiodeLines.Graphics.moveTo(0, -DIODE_HEIGHT/2 - DIODE_ELEVATION);
+            DiodeLines.Graphics.lineTo(0, DIODE_HEIGHT/2 - DIODE_ELEVATION);
+            DiodeLines.Graphics.drawRect(-DIODE_WIDTH/2, - DIODE_HEIGHT/2 - DIODE_ELEVATION, DIODE_WIDTH, DIODE_HEIGHT);
         }
         return DiodeLines;
     }
@@ -99,11 +100,11 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
             DiodeRects.Graphics.clear();
 
             DiodeRects.Graphics.beginFill(0xff0000);
-            DiodeRects.Graphics.drawRect(-DIODE_WIDTH/2, -DIODE_HEIGHT/2, DIODE_WIDTH/2*settings.voltage, DIODE_HEIGHT);
+            DiodeRects.Graphics.drawRect(-DIODE_WIDTH/2, -DIODE_HEIGHT/2 - DIODE_ELEVATION, DIODE_WIDTH/2*settings.voltage, DIODE_HEIGHT);
             DiodeRects.Graphics.endFill();
 
             DiodeRects.Graphics.beginFill(0x0000ff);
-            DiodeRects.Graphics.drawRect(DIODE_WIDTH/2*(1-settings.voltage), -DIODE_HEIGHT/2, (DIODE_WIDTH/2) - DIODE_WIDTH/2*(1-settings.voltage), DIODE_HEIGHT);
+            DiodeRects.Graphics.drawRect(DIODE_WIDTH/2*(1-settings.voltage), -DIODE_HEIGHT/2 - DIODE_ELEVATION, (DIODE_WIDTH/2) - DIODE_WIDTH/2*(1-settings.voltage), DIODE_HEIGHT);
             DiodeRects.Graphics.endFill();
         }
 
@@ -116,7 +117,7 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
 
         Ground.POSITION = {
             x: 180.0,
-            y: 40.0
+            y: 40.0 - DIODE_ELEVATION
         }
         Ground.WIDTH = 20.0;
         Ground.HEIGHT = 10.0;
@@ -145,7 +146,7 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
 
         AClogo.POSITION = {
             x: -180.0,
-            y: 0.0
+            y: 0.0 - DIODE_ELEVATION
         }
         AClogo.RADIUS = 10.0;
 
@@ -171,12 +172,12 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
 
             OtherLines.Graphics.lineStyle(1, 0x000000, 1);
 
-            OtherLines.Graphics.moveTo(DIODE_WIDTH/2, 0);
-            OtherLines.Graphics.lineTo(ground.POSITION.x, 0);
+            OtherLines.Graphics.moveTo(DIODE_WIDTH/2, -DIODE_ELEVATION);
+            OtherLines.Graphics.lineTo(ground.POSITION.x, -DIODE_ELEVATION);
             OtherLines.Graphics.lineTo(ground.POSITION.x, ground.POSITION.y - ground.HEIGHT / 2);
 
-            OtherLines.Graphics.moveTo(-DIODE_WIDTH/2, 0);
-            OtherLines.Graphics.lineTo(aclogo.POSITION.x + aclogo.RADIUS, 0);
+            OtherLines.Graphics.moveTo(-DIODE_WIDTH/2, -DIODE_ELEVATION);
+            OtherLines.Graphics.lineTo(aclogo.POSITION.x + aclogo.RADIUS, -DIODE_ELEVATION);
         }
 
         return OtherLines;
