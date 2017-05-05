@@ -3,6 +3,18 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
     animation.name = 'PN junction diode under bias';
     animation.description = 'This interactive animation shows a band diagram for a PN junction diode under bias.';
 
+    var EnergyField = function() {
+        var EnergyField = {
+            HEIGHT: 200,
+            limits: [2, -2],
+
+            getHeightForValue: function(value) {
+                return (value - EnergyField.limits[1]) / (EnergyField.limits[0] - EnergyField.limits[2]) * EnergyField.HEIGHT;
+            }
+        }
+    }
+    energyField = EnergyField();
+
     var settings = {
         voltage: 0.6,
 
@@ -30,8 +42,18 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
         return Drawable;
     }
 
-    var Bezier = function(p1, p2, p3, p4, color, LOD) {
+    var CanvasTexture = function() {
+        var CanvasTexture = Drawable();
 
+        CanvasTexture.draw = function() {
+            CanvasTexture.drawOnCanvas();
+            CanvasTexture.Graphics = new PIXI.Sprite(PIXI.Texture.fromCanvas(canvas));
+        }
+
+        return CanvasTexture;
+    }
+
+    var Bezier = function(p1, p2, p3, p4, color, LOD) {
         var Bezier = Drawable();
 
         Bezier.p1 = p1;
@@ -184,11 +206,60 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
     }
     var otherLines = OtherLines();
 
+    var FIELDLINES_HEIGHT = 40;
+    var FIELDLINES_SFKLJS = 10;
+
+    var FieldLines = function() {
+        var FieldLines = Drawable();
+
+        FieldLines.draw = function() {
+            FieldLines.Graphics.clear();
+
+            FieldLines.Graphics.lineStyle(1, 0x000000, 1);
+            FieldLines.Graphics.moveTo(0, FIELDLINES_HEIGHT / 2);
+            FieldLines.Graphics.lineTo(0, -FIELDLINES_HEIGHT / 2);
+
+            FieldLines.Graphics.moveTo(-DIODE_WIDTH / 2, -FIELDLINES_HEIGHT / 2 - FIELDLINES_SFKLJS);
+            FieldLines.Graphics.lineTo(-DIODE_WIDTH / 2 + DIODE_WIDTH/2*settings.voltage, -FIELDLINES_HEIGHT / 2 - FIELDLINES_SFKLJS);
+
+            FieldLines.Graphics.moveTo(DIODE_WIDTH / 2, -FIELDLINES_HEIGHT / 2 + FIELDLINES_SFKLJS);
+            FieldLines.Graphics.lineTo(DIODE_WIDTH / 2 - DIODE_WIDTH/2*settings.voltage, -FIELDLINES_HEIGHT / 2 + FIELDLINES_SFKLJS);
+
+            FieldLines.Graphics.moveTo(-DIODE_WIDTH / 2, FIELDLINES_HEIGHT / 2 - FIELDLINES_SFKLJS);
+            FieldLines.Graphics.lineTo(-DIODE_WIDTH / 2 + DIODE_WIDTH/2*settings.voltage, FIELDLINES_HEIGHT / 2 - FIELDLINES_SFKLJS);
+
+            FieldLines.Graphics.moveTo(DIODE_WIDTH / 2, FIELDLINES_HEIGHT / 2 + FIELDLINES_SFKLJS);
+            FieldLines.Graphics.lineTo(DIODE_WIDTH / 2 - DIODE_WIDTH/2*settings.voltage, FIELDLINES_HEIGHT / 2 + FIELDLINES_SFKLJS);
+        }
+
+        return FieldLines;
+    }
+    var fieldLines = FieldLines();
+
+    var topBezier = Bezier(ddd.Vector(-DIODE_WIDTH / 2 + DIODE_WIDTH / 2 * settings.voltage, -FIELDLINES_HEIGHT / 2 - FIELDLINES_SFKLJS, 0),
+                           ddd.Vector(0, -FIELDLINES_HEIGHT / 2 - FIELDLINES_SFKLJS, 0),
+                           ddd.Vector(0, -FIELDLINES_HEIGHT / 2 + FIELDLINES_SFKLJS, 0),
+                           ddd.Vector(DIODE_WIDTH / 2 - DIODE_WIDTH / 2 * settings.voltage, -FIELDLINES_HEIGHT / 2 + FIELDLINES_SFKLJS, 0),
+                           0x000000);
+
+    var bottomBezier = Bezier(ddd.Vector(-DIODE_WIDTH / 2 + DIODE_WIDTH / 2 * settings.voltage, FIELDLINES_HEIGHT / 2 - FIELDLINES_SFKLJS, 0),
+                              ddd.Vector(0, FIELDLINES_HEIGHT / 2 - FIELDLINES_SFKLJS, 0),
+                              ddd.Vector(0, FIELDLINES_HEIGHT / 2 + FIELDLINES_SFKLJS, 0),
+                              ddd.Vector(DIODE_WIDTH / 2 - DIODE_WIDTH / 2 * settings.voltage, FIELDLINES_HEIGHT / 2 + FIELDLINES_SFKLJS, 0),
+                              0x000000);
+
     var callbacks = {
         setVoltage: function(val) {
             console.log('voltage changed to ' + val);
             settings.voltage = val;
             diodeRects.draw();
+            fieldLines.draw();
+            topBezier.p1 = ddd.Vector(-DIODE_WIDTH / 2 + DIODE_WIDTH / 2 * settings.voltage, -FIELDLINES_HEIGHT / 2 - FIELDLINES_SFKLJS, 0);
+            topBezier.p4 = ddd.Vector(DIODE_WIDTH / 2 - DIODE_WIDTH / 2 * settings.voltage, -FIELDLINES_HEIGHT / 2 + FIELDLINES_SFKLJS, 0);
+            topBezier.draw();
+            bottomBezier.p1 = ddd.Vector(-DIODE_WIDTH / 2 + DIODE_WIDTH / 2 * settings.voltage, FIELDLINES_HEIGHT / 2 - FIELDLINES_SFKLJS, 0);
+            bottomBezier.p4 = ddd.Vector(DIODE_WIDTH / 2 - DIODE_WIDTH / 2 * settings.voltage, FIELDLINES_HEIGHT / 2 + FIELDLINES_SFKLJS, 0);
+            bottomBezier.draw();
         },
 
         setLeakage: function(val) {
@@ -228,6 +299,9 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
         aclogo.draw();
         otherLines.draw();
         bezier.draw();
+        fieldLines.draw();
+        topBezier.draw();
+        bottomBezier.draw();
 
         animation.scene.addChild(canvasRect.Graphics);
         animation.scene.addChild(diodeRects.Graphics);
@@ -236,6 +310,9 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
         animation.scene.addChild(aclogo.Graphics);
         animation.scene.addChild(otherLines.Graphics);
         animation.scene.addChild(bezier.Graphics);
+        animation.scene.addChild(fieldLines.Graphics);
+        animation.scene.addChild(topBezier.Graphics);
+        animation.scene.addChild(bottomBezier.Graphics);
     }
 
     animation.onRender = function() {
