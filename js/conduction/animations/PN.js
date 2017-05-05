@@ -47,6 +47,7 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
 
     var CanvasTexture = function() {
         var CanvasTexture = Drawable();
+        CanvasTexture.Graphics = new PIXI.Sprite();
 
         CanvasTexture.canvas = null;
 
@@ -59,10 +60,12 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
             CanvasTexture.canvas = document.createElement('canvas');
             CanvasTexture.canvas.width = width;
             CanvasTexture.canvas.height = height;
+            CanvasTexture.Graphics.setTexture(PIXI.Texture.fromCanvas(CanvasTexture.canvas));
         }
 
         CanvasTexture.drawOnCanvas = function() {
             var ctx = CanvasTexture.canvas.getContext('2d');
+            ctx.clearRect(0, 0, CanvasTexture.canvas.width, CanvasTexture.canvas.height);
 
             for (var x = 0; x < CanvasTexture.canvas.width; x++) {
                 for (var y = 0; y < CanvasTexture.canvas.height; y++) {
@@ -81,7 +84,7 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
 
         CanvasTexture.draw = function() {
             CanvasTexture.drawOnCanvas();
-            CanvasTexture.Graphics = new PIXI.Sprite(PIXI.Texture.fromCanvas(CanvasTexture.canvas));
+            CanvasTexture.Graphics.texture.update(); // we force it to recreate the texture, otherwise it would cache it and not update
             CanvasTexture.Graphics.width = CanvasTexture.width;
             CanvasTexture.Graphics.height = CanvasTexture.height;
             CanvasTexture.Graphics.x = CanvasTexture.x;
@@ -286,18 +289,53 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
                               ddd.Vector(DIODE_WIDTH / 2 - DIODE_WIDTH / 2 * settings.voltage, FIELDLINES_HEIGHT / 2 + FIELDLINES_SFKLJS, 0),
                               0x000000);
 
+    var textureTopLeft = CanvasTexture();
+    textureTopLeft.createCanvas(10, 10);
+    textureTopLeft.setPosition(-DIODE_WIDTH/2, -FIELDLINES_HEIGHT / 2 - FIELDLINES_SFKLJS*4, DIODE_WIDTH/2*settings.voltage, FIELDLINES_SFKLJS * 3);
+    textureTopLeft.draw();
+
+    var textureTopRight = CanvasTexture();
+    textureTopRight.createCanvas(10, 10);
+    textureTopRight.setPosition(DIODE_WIDTH/2 - DIODE_WIDTH/2*settings.voltage, -FIELDLINES_HEIGHT / 2 - FIELDLINES_SFKLJS*2, DIODE_WIDTH/2*settings.voltage, FIELDLINES_SFKLJS * 3);
+    textureTopRight.draw();
+
+    var textureBottomLeft = CanvasTexture();
+    textureBottomLeft.createCanvas(10, 10);
+    textureBottomLeft.setPosition(-DIODE_WIDTH/2, +FIELDLINES_HEIGHT / 2 - FIELDLINES_SFKLJS, DIODE_WIDTH/2*settings.voltage, FIELDLINES_SFKLJS * 3);
+    textureBottomLeft.draw();
+
+    var textureBottomRight = CanvasTexture();
+    textureBottomRight.createCanvas(10, 10);
+    textureBottomRight.setPosition(DIODE_WIDTH/2 - DIODE_WIDTH/2*settings.voltage, +FIELDLINES_HEIGHT / 2 + FIELDLINES_SFKLJS, DIODE_WIDTH/2*settings.voltage, FIELDLINES_SFKLJS * 3);
+    textureBottomRight.draw();
+
+
+
     var callbacks = {
         setVoltage: function(val) {
-            console.log('voltage changed to ' + val);
             settings.voltage = val;
             diodeRects.draw();
             fieldLines.draw();
+
             topBezier.p1 = ddd.Vector(-DIODE_WIDTH / 2 + DIODE_WIDTH / 2 * settings.voltage, -FIELDLINES_HEIGHT / 2 - FIELDLINES_SFKLJS, 0);
             topBezier.p4 = ddd.Vector(DIODE_WIDTH / 2 - DIODE_WIDTH / 2 * settings.voltage, -FIELDLINES_HEIGHT / 2 + FIELDLINES_SFKLJS, 0);
             topBezier.draw();
+
             bottomBezier.p1 = ddd.Vector(-DIODE_WIDTH / 2 + DIODE_WIDTH / 2 * settings.voltage, FIELDLINES_HEIGHT / 2 - FIELDLINES_SFKLJS, 0);
             bottomBezier.p4 = ddd.Vector(DIODE_WIDTH / 2 - DIODE_WIDTH / 2 * settings.voltage, FIELDLINES_HEIGHT / 2 + FIELDLINES_SFKLJS, 0);
             bottomBezier.draw();
+
+            textureTopRight.setPosition(DIODE_WIDTH/2 - DIODE_WIDTH/2*settings.voltage, -FIELDLINES_HEIGHT / 2 - FIELDLINES_SFKLJS*2, DIODE_WIDTH/2*settings.voltage, FIELDLINES_SFKLJS * 3);
+            textureTopRight.draw();
+
+            textureTopLeft.setPosition(-DIODE_WIDTH/2, -FIELDLINES_HEIGHT / 2 - FIELDLINES_SFKLJS*4, DIODE_WIDTH/2*settings.voltage, FIELDLINES_SFKLJS * 3);
+            textureTopLeft.draw();
+
+            textureBottomRight.setPosition(DIODE_WIDTH/2 - DIODE_WIDTH/2*settings.voltage, +FIELDLINES_HEIGHT / 2 + FIELDLINES_SFKLJS, DIODE_WIDTH/2*settings.voltage, FIELDLINES_SFKLJS * 3);
+            textureBottomRight.draw();
+
+            textureBottomLeft.setPosition(-DIODE_WIDTH/2, +FIELDLINES_HEIGHT / 2 - FIELDLINES_SFKLJS, DIODE_WIDTH/2*settings.voltage, FIELDLINES_SFKLJS * 3);
+            textureBottomLeft.draw();
         },
 
         setLeakage: function(val) {
@@ -321,19 +359,7 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
         }
     };
 
-
-    bezier = Bezier(ddd.Vector(-200, -100, 0),
-                    ddd.Vector(100, -150, 0),
-                    ddd.Vector(0, 150, 0),
-                    ddd.Vector(200, 100, 0),
-                    0xffff00);
-
     animation.onLoad = function() {
-
-        var ctxt = CanvasTexture();
-        ctxt.createCanvas(3, 4);
-        ctxt.setPosition(-20, -20, 40, 70);
-        ctxt.draw();
 
         canvasRect.draw();
         diodeLines.draw();
@@ -341,7 +367,6 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
         ground.draw();
         aclogo.draw();
         otherLines.draw();
-        bezier.draw();
         fieldLines.draw();
         topBezier.draw();
         bottomBezier.draw();
@@ -352,11 +377,14 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
         animation.scene.addChild(ground.Graphics);
         animation.scene.addChild(aclogo.Graphics);
         animation.scene.addChild(otherLines.Graphics);
-        animation.scene.addChild(bezier.Graphics);
         animation.scene.addChild(fieldLines.Graphics);
         animation.scene.addChild(topBezier.Graphics);
         animation.scene.addChild(bottomBezier.Graphics);
-        animation.scene.addChild(ctxt.Graphics);
+
+        animation.scene.addChild(textureTopLeft.Graphics);
+        animation.scene.addChild(textureTopRight.Graphics);
+        animation.scene.addChild(textureBottomLeft.Graphics);
+        animation.scene.addChild(textureBottomRight.Graphics);
     }
 
     animation.onRender = function() {
