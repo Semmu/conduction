@@ -82,7 +82,7 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
         return CanvasTexture;
     }
 
-    var Bezier = function(p1, p2, p3, p4, color, LOD) {
+    var Bezier = function(p1, p2, p3, p4, color, drawLOD) {
         var Bezier = Drawable();
 
         Bezier.p1 = p1;
@@ -91,9 +91,16 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
         Bezier.p4 = p4;
         Bezier.color = color;
 
-        Bezier.LOD = (LOD ? LOD : 30);
+        Bezier.cacheLOD = 500;
+        Bezier.cache = [];
+
+        Bezier.drawLOD = (drawLOD ? drawLOD : 30);
 
         Bezier.getPointAtT = function(t) {
+            return Bezier.cache[Math.floor(t * Bezier.cacheLOD)];
+        }
+
+        Bezier.calculatePointAtT = function(t) {
             return Bezier.p1.scale(Math.pow(1-t, 3)).add(
                    Bezier.p2.scale(3*Math.pow(1-t, 2)*t).add(
                    Bezier.p3.scale(3*(1-t)*Math.pow(t, 2)).add(
@@ -104,13 +111,24 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
             Bezier.Graphics.clear();
             Bezier.Graphics.lineStyle(1, Bezier.color, 1);
 
-            for (var i = 0; i < Bezier.LOD; i++) {
-                var from = Bezier.getPointAtT(1.0 * i / Bezier.LOD);
-                var to = Bezier.getPointAtT(1.0 * (i+1) / Bezier.LOD);
+            for (var i = 0; i < Bezier.drawLOD; i++) {
+                var from = Bezier.getPointAtT(1.0 * i / Bezier.drawLOD);
+                var to = Bezier.getPointAtT(1.0 * (i+1) / Bezier.drawLOD);
                 Bezier.Graphics.moveTo(from.x, from.y);
                 Bezier.Graphics.lineTo(to.x, to.y);
             }
         }
+
+        Bezier.calculateCache = function() {
+            Bezier.cache = [];
+
+            for (var i = 0; i < Bezier.cacheLOD; i++) {
+                Bezier.cache.push(Bezier.calculatePointAtT(1.0*i/Bezier.cacheLOD));
+            }
+            Bezier.cache.push(Bezier.calculatePointAtT(1.0));
+        }
+
+        Bezier.calculateCache();
 
         return Bezier;
     }
@@ -347,13 +365,13 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
             trajectory: trajectory,
             elements: [],
 
-            speed: 0.01,
+            speed: 0.005,
 
             spawn: function(count) {
                 EnergyField.count = count;
                 for (var i = 0; i < count; i++) {
-                    var randomOffset = ddd.Vector(Math.random(), Math.random(), 0);
-                    var offsetLength = 5;
+                    var randomOffset = ddd.Vector(Math.random() - 0.5, Math.random() - 0.5, 0);
+                    var offsetLength = 15;
                     var anelem = ElectronInField(randomOffset.setLength(offsetLength));
                     anelem.distance = Math.random();
                     EnergyField.elements.push(anelem);
@@ -363,6 +381,7 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
             },
 
             tick: function() {
+                var now = performance.now();
                 for (var i = 0; i < EnergyField.elements.length; i++) {
                     var el = EnergyField.elements[i];
                     el.distance += EnergyField.speed;
@@ -373,6 +392,7 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
                     var trajectoryPositionWithOffset = el.offset.add(trajectoryPosition);
                     el.setGraphicsPosition(trajectoryPositionWithOffset.x, trajectoryPositionWithOffset.y);
                 }
+                console.log(performance.now() - now);
             }
         };
 
@@ -462,7 +482,7 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
 
         animation.scene.addChild(electronContainer);
 
-        anEnergyField.spawn(100);
+        anEnergyField.spawn(10000);
     }
 
     animation.onRender = function() {
