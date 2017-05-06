@@ -6,18 +6,6 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
     animation.name = 'PN junction diode under bias';
     animation.description = 'This interactive animation shows a band diagram for a PN junction diode under bias.';
 
-    var EnergyField = function() {
-        var EnergyField = {
-            HEIGHT: 200,
-            limits: [2, -2],
-
-            getHeightForValue: function(value) {
-                return (value - EnergyField.limits[1]) / (EnergyField.limits[0] - EnergyField.limits[2]) * EnergyField.HEIGHT;
-            }
-        }
-    }
-    energyField = EnergyField();
-
     var settings = {
         voltage: 0.6,
 
@@ -310,6 +298,92 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
     textureBottomRight.draw();
 
 
+    var electronTextureCanvas = document.createElement('canvas');
+    electronTextureCanvas.width = 10;
+    electronTextureCanvas.height = 10;
+    var ctx = electronTextureCanvas.getContext('2d');
+    ctx.beginPath();
+    ctx.arc(5, 5, 5, 0, 2 * Math.PI, false);
+    ctx.fillStyle = '#00aaff';
+    ctx.fill();
+
+    var holeTextureCanvas = document.createElement('canvas');
+    holeTextureCanvas.width = 10;
+    holeTextureCanvas.height = 10;
+    var ctx = holeTextureCanvas.getContext('2d');
+    ctx.beginPath();
+    ctx.arc(5, 5, 5, 0, 2 * Math.PI, false);
+    ctx.fillStyle = '#ff3333';
+    ctx.fill();
+
+    var electronContainer = new PIXI.particles.ParticleContainer(9999);
+    var electrons = [];
+
+    var Electron = function() {
+        var Electron = Drawable();
+        Electron.Graphics = new PIXI.Sprite(PIXI.Texture.fromCanvas(electronTextureCanvas));
+        Electron.Graphics.width = 1;
+        Electron.Graphics.height = 1;
+        return Electron;
+    }
+
+    var ElectronInField = function(offset) {
+        var ElectronInField = Electron();
+
+        ElectronInField.offset = offset;
+        ElectronInField.distance = 0;
+
+        ElectronInField.setGraphicsPosition = function(x, y) {
+            ElectronInField.Graphics.x = x;
+            ElectronInField.Graphics.y = y;
+        }
+
+        return ElectronInField;
+    }
+
+    var EnergyField = function(trajectory) {
+        var EnergyField = {
+            count: 0,
+            trajectory: trajectory,
+            elements: [],
+
+            speed: 0.01,
+
+            spawn: function(count) {
+                EnergyField.count = count;
+                for (var i = 0; i < count; i++) {
+                    var randomOffset = ddd.Vector(Math.random(), Math.random(), 0);
+                    var offsetLength = 5;
+                    var anelem = ElectronInField(randomOffset.setLength(offsetLength));
+                    anelem.distance = Math.random();
+                    EnergyField.elements.push(anelem);
+                    animation.scene.addChild(anelem.Graphics);
+
+                }
+            },
+
+            tick: function() {
+                for (var i = 0; i < EnergyField.elements.length; i++) {
+                    var el = EnergyField.elements[i];
+                    el.distance += EnergyField.speed;
+                    if (el.distance > 1)
+                        el.distance--;
+
+                    var trajectoryPosition = EnergyField.trajectory.getPointAtT(el.distance);
+                    var trajectoryPositionWithOffset = el.offset.add(trajectoryPosition);
+                    el.setGraphicsPosition(trajectoryPositionWithOffset.x, trajectoryPositionWithOffset.y);
+                }
+            }
+        };
+
+        return EnergyField;
+    }
+
+    var anEnergyField = EnergyField(Bezier(ddd.Vector(-100, 100, 0),
+                                           ddd.Vector(-100, 0, 0),
+                                           ddd.Vector(200, 200, 0),
+                                           ddd.Vector(200, 0, 0)));
+
 
     var callbacks = {
         setVoltage: function(val) {
@@ -385,10 +459,14 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
         animation.scene.addChild(textureTopRight.Graphics);
         animation.scene.addChild(textureBottomLeft.Graphics);
         animation.scene.addChild(textureBottomRight.Graphics);
+
+        animation.scene.addChild(electronContainer);
+
+        anEnergyField.spawn(100);
     }
 
     animation.onRender = function() {
-
+        anEnergyField.tick();
     }
 
 
