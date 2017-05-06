@@ -368,16 +368,23 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
 
             speed: 0.001,
 
-            spawn: function(count) {
+            populate: function(count) {
+                if (EnergyField.count > 0) {
+                    for (var i = 0; i < EnergyField.elements.length; i++) {
+                        animation.scene.removeChild(EnergyField.elements[i].Graphics);
+                    }
+                    EnergyField.elements = [];
+                }
+
                 EnergyField.count = count;
                 for (var i = 0; i < count; i++) {
                     var randomOffset = ddd.Vector(Math.random() - 0.5, Math.random() - 0.5, 0);
                     var offsetLength = 15;
-                    var anelem = ElectronInField(randomOffset.setLength(offsetLength));
+                    var anelem = ElectronInField(randomOffset.scale(offsetLength));
                     anelem.distance = Math.random();
+
                     EnergyField.elements.push(anelem);
                     animation.scene.addChild(anelem.Graphics);
-
                 }
             },
 
@@ -393,7 +400,7 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
                     var trajectoryPositionWithOffset = el.offset.add(trajectoryPosition);
                     el.setGraphicsPosition(trajectoryPositionWithOffset.x, trajectoryPositionWithOffset.y);
                 }
-                console.log(performance.now() - now);
+                //console.log(performance.now() - now);
             }
         };
 
@@ -484,7 +491,7 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
 
         animation.scene.addChild(electronContainer);
 
-        anEnergyField.spawn(100);
+        anEnergyField.populate(1000);
     }
 
     animation.onRender = function() {
