@@ -82,7 +82,7 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
         return CanvasTexture;
     }
 
-    var Bezier = function(p1, p2, p3, p4, color, drawLOD) {
+    var Bezier = function(p1, p2, p3, p4, color, cacheLOD, drawLOD) {
         var Bezier = Drawable();
 
         Bezier.p1 = p1;
@@ -91,10 +91,10 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
         Bezier.p4 = p4;
         Bezier.color = color;
 
-        Bezier.cacheLOD = 1000;
+        Bezier.cacheLOD = (cacheLOD ? cacheLOD : 1000);
         Bezier.cache = [];
 
-        Bezier.drawLOD = (drawLOD ? drawLOD : 30);
+        Bezier.drawLOD = (drawLOD ? (drawLOD > Bezier.cacheLOD ? Bezier.cacheLOD : Bezier.drawLOD) : Bezier.cacheLOD);
 
         Bezier.getPointAtT = function(t) {
             return Bezier.cache[Math.floor(t * Bezier.cacheLOD)];
@@ -111,6 +111,7 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
             Bezier.Graphics.clear();
             Bezier.Graphics.lineStyle(1, Bezier.color, 1);
 
+            Bezier.calculateCache();
             for (var i = 0; i < Bezier.drawLOD; i++) {
                 var from = Bezier.getPointAtT(1.0 * i / Bezier.drawLOD);
                 var to = Bezier.getPointAtT(1.0 * (i+1) / Bezier.drawLOD);
@@ -287,13 +288,13 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
                            ddd.Vector(0, -FIELDLINES_HEIGHT / 2 - FIELDLINES_SFKLJS, 0),
                            ddd.Vector(0, -FIELDLINES_HEIGHT / 2 + FIELDLINES_SFKLJS, 0),
                            ddd.Vector(DIODE_WIDTH / 2 - DIODE_WIDTH / 2 * settings.voltage, -FIELDLINES_HEIGHT / 2 + FIELDLINES_SFKLJS, 0),
-                           0x000000);
+                           0x000000, 10);
 
     var bottomBezier = Bezier(ddd.Vector(-DIODE_WIDTH / 2 + DIODE_WIDTH / 2 * settings.voltage, FIELDLINES_HEIGHT / 2 - FIELDLINES_SFKLJS, 0),
                               ddd.Vector(0, FIELDLINES_HEIGHT / 2 - FIELDLINES_SFKLJS, 0),
                               ddd.Vector(0, FIELDLINES_HEIGHT / 2 + FIELDLINES_SFKLJS, 0),
                               ddd.Vector(DIODE_WIDTH / 2 - DIODE_WIDTH / 2 * settings.voltage, FIELDLINES_HEIGHT / 2 + FIELDLINES_SFKLJS, 0),
-                              0x000000);
+                              0x000000, 10);
 
     var textureTopLeft = CanvasTexture();
     textureTopLeft.createCanvas(10, 10);
@@ -402,7 +403,8 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
     var anEnergyField = EnergyField(Bezier(ddd.Vector(-100, 100, 0),
                                            ddd.Vector(-100, 0, 0),
                                            ddd.Vector(200, 200, 0),
-                                           ddd.Vector(200, 0, 0)));
+                                           ddd.Vector(200, 0, 0),
+                                           0xffffff, 1000));
 
 
     var callbacks = {
