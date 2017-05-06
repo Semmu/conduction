@@ -91,7 +91,7 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
         Bezier.p4 = p4;
         Bezier.color = color;
 
-        Bezier.cacheLOD = 500;
+        Bezier.cacheLOD = 1000;
         Bezier.cache = [];
 
         Bezier.drawLOD = (drawLOD ? drawLOD : 30);
@@ -365,7 +365,7 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
             trajectory: trajectory,
             elements: [],
 
-            speed: 0.005,
+            speed: 0.001,
 
             spawn: function(count) {
                 EnergyField.count = count;
@@ -482,7 +482,7 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
 
         animation.scene.addChild(electronContainer);
 
-        anEnergyField.spawn(10000);
+        anEnergyField.spawn(100);
     }
 
     animation.onRender = function() {
