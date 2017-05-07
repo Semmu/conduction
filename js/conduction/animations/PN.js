@@ -392,6 +392,42 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
     }
     var bottomInjectionCurve = BottomInjectionCurve();
 
+    var LeftRecombinationCurve = function() {
+        var LeftRecombinationCurve = Bezier(Field.getKeyPositionAt(1, 1),
+                                            Field.getKeyPositionAt(1, 2),
+                                            Field.getKeyPositionAt(1, 2),
+                                            Field.getKeyPositionAt(1, 7),
+                                            0x000000, 1000, 30);
+
+        LeftRecombinationCurve.updateCPs = function() {
+            LeftRecombinationCurve.p1 = Field.getKeyPositionAt(1, 1);
+            LeftRecombinationCurve.p2 = Field.getKeyPositionAt(1, 2);
+            LeftRecombinationCurve.p3 = Field.getKeyPositionAt(1, 2);
+            LeftRecombinationCurve.p4 = Field.getKeyPositionAt(1, 7);
+        }
+
+        return LeftRecombinationCurve;
+    }
+    var leftRecombinationCurve = LeftRecombinationCurve();
+
+    var RightRecombinationCurve = function() {
+        var RightRecombinationCurve = Bezier(Field.getKeyPositionAt(3, 3),
+                                            Field.getKeyPositionAt(3, 8),
+                                            Field.getKeyPositionAt(3, 8),
+                                            Field.getKeyPositionAt(3, 9),
+                                            0x000000, 1000, 30);
+
+        RightRecombinationCurve.updateCPs = function() {
+            RightRecombinationCurve.p1 = Field.getKeyPositionAt(3, 3);
+            RightRecombinationCurve.p2 = Field.getKeyPositionAt(3, 8);
+            RightRecombinationCurve.p3 = Field.getKeyPositionAt(3, 8);
+            RightRecombinationCurve.p4 = Field.getKeyPositionAt(3, 9);
+        }
+
+        return RightRecombinationCurve;
+    }
+    var rightRecombinationCurve = RightRecombinationCurve();
+
     var CanvasRect = function() {
         var CanvasRect = Drawable();
 
@@ -637,6 +673,28 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
     }
     var bottomLeakage = BottomLeakage();
 
+    var LeftRecombination = function() {
+        var LeftRecombination = ParticleField(leftRecombinationCurve);
+
+        LeftRecombination.spawn = function() {
+            return ElectronInField(ddd.Vector(-1 * (Field.getKeyPositionAt(1, 0).x - Field.getKeyPositionAt(0, 0).x) * Math.pow(Math.random(), 2.5), 0, 0));
+        }
+
+        return LeftRecombination;
+    }
+    var leftRecombination = LeftRecombination();
+
+    var RightRecombination = function() {
+        var RightRecombination = ParticleField(rightRecombinationCurve);
+
+        RightRecombination.spawn = function() {
+            return ElectronInField(ddd.Vector((Field.getKeyPositionAt(4, 0).x - Field.getKeyPositionAt(3, 0).x) * Math.pow(Math.random(), 2.5), 0, 0));
+        }
+
+        return RightRecombination;
+    }
+    var rightRecombination = RightRecombination();
+
     var callbacks = {
         setVoltage: function(val) {
             settings.voltage = val;
@@ -650,6 +708,10 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
             topInjectionCurve.calculateCache();
             bottomInjectionCurve.updateCPs();
             bottomInjectionCurve.calculateCache();
+            leftRecombinationCurve.updateCPs();
+            leftRecombinationCurve.calculateCache();
+            rightRecombinationCurve.updateCPs();
+            rightRecombinationCurve.calculateCache();
             topLeftCanvas.updateMetrics();
             topLeftCanvas.draw();
             topRightCanvas.updateMetrics();
@@ -706,6 +768,8 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
         topInjection.populate(1000);
         bottomInjection.populate(1000);
         bottomLeakage.populate(1000);
+        leftRecombination.populate(1000);
+        rightRecombination.populate(1000);
     }
 
     animation.onRender = function() {
@@ -713,6 +777,8 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
         topInjection.tick();
         bottomInjection.tick();
         bottomLeakage.tick();
+        leftRecombination.tick();
+        rightRecombination.tick();
     }
 
     animation.settings = [
