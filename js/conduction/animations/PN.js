@@ -451,6 +451,18 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
         TopLeftCanvas.createCanvas(10, 10);
         TopLeftCanvas.drawOnCanvas();
 
+        TopLeftCanvas.drawOnCanvas = function() {
+            var ctx = TopLeftCanvas.canvas.getContext('2d');
+            ctx.clearRect(0, 0, TopLeftCanvas.canvas.width, TopLeftCanvas.canvas.height);
+
+            for (var x = 0; x < TopLeftCanvas.canvas.width; x++) {
+                for (var y = 0; y < TopLeftCanvas.canvas.height; y++) {
+                    ctx.fillStyle = 'hsl(220, '+((Math.random()/2+0.5)*100)+'%, 50%)';
+                    ctx.fillRect(x, y, 1, 1);
+                }
+            }
+        }
+
         TopLeftCanvas.updateMetrics = function() {
             TopLeftCanvas.setPosition(Field.getKeyPositionAt(0, 0).x,
                                       Field.getKeyPositionAt(0, 0).y,
@@ -468,6 +480,18 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
 
         TopRightCanvas.createCanvas(10, 10);
         TopRightCanvas.drawOnCanvas();
+
+        TopRightCanvas.drawOnCanvas = function() {
+            var ctx = TopRightCanvas.canvas.getContext('2d');
+            ctx.clearRect(0, 0, TopRightCanvas.canvas.width, TopRightCanvas.canvas.height);
+
+            for (var x = 0; x < TopRightCanvas.canvas.width; x++) {
+                for (var y = 0; y < TopRightCanvas.canvas.height; y++) {
+                    ctx.fillStyle = 'hsl(220, '+((Math.random()/2+0.5)*100)+'%, 50%)';
+                    ctx.fillRect(x, y, 1, 1);
+                }
+            }
+        }
 
         TopRightCanvas.updateMetrics = function() {
             TopRightCanvas.setPosition(Field.getKeyPositionAt(3, 0).x,
@@ -487,6 +511,18 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
         BottomLeftCanvas.createCanvas(10, 10);
         BottomLeftCanvas.drawOnCanvas();
 
+        BottomLeftCanvas.drawOnCanvas = function() {
+            var ctx = BottomLeftCanvas.canvas.getContext('2d');
+            ctx.clearRect(0, 0, BottomLeftCanvas.canvas.width, BottomLeftCanvas.canvas.height);
+
+            for (var x = 0; x < BottomLeftCanvas.canvas.width; x++) {
+                for (var y = 0; y < BottomLeftCanvas.canvas.height; y++) {
+                    ctx.fillStyle = 'hsl(0, '+((Math.random()/2+0.5)*100)+'%, 50%)';
+                    ctx.fillRect(x, y, 1, 1);
+                }
+            }
+        }
+
         BottomLeftCanvas.updateMetrics = function() {
             BottomLeftCanvas.setPosition(Field.getKeyPositionAt(0, 7).x,
                                       Field.getKeyPositionAt(0, 7).y,
@@ -504,6 +540,18 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
 
         BottomRightCanvas.createCanvas(10, 10);
         BottomRightCanvas.drawOnCanvas();
+
+        BottomRightCanvas.drawOnCanvas = function() {
+            var ctx = BottomRightCanvas.canvas.getContext('2d');
+            ctx.clearRect(0, 0, BottomRightCanvas.canvas.width, BottomRightCanvas.canvas.height);
+
+            for (var x = 0; x < BottomRightCanvas.canvas.width; x++) {
+                for (var y = 0; y < BottomRightCanvas.canvas.height; y++) {
+                    ctx.fillStyle = 'hsl(0, '+((Math.random()/2+0.5)*100)+'%, 50%)';
+                    ctx.fillRect(x, y, 1, 1);
+                }
+            }
+        }
 
         BottomRightCanvas.updateMetrics = function() {
             BottomRightCanvas.setPosition(Field.getKeyPositionAt(3, 9).x,
