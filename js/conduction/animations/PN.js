@@ -19,9 +19,6 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
 
     var DIODE_WIDTH = 300;
     var DIODE_HEIGHT = 30;
-    var CANVAS_WIDTH = 400;
-    var CANVAS_HEIGHT = 300;
-    var CANVAS_ELEVATION = 0;
     var DIODE_ELEVATION = 100;
 
     var Drawable = function() {
@@ -32,6 +29,7 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
 
         return Drawable;
     }
+    var drawables = [];
 
     var CanvasTexture = function() {
         var CanvasTexture = Drawable();
@@ -134,21 +132,6 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
         return Bezier;
     }
 
-    var CanvasRect = function() {
-        var CanvasRect = Drawable();
-
-        CanvasRect.draw = function() {
-            CanvasRect.Graphics.clear();
-
-            CanvasRect.Graphics.beginFill(0xddffff);
-            CanvasRect.Graphics.drawRect(-CANVAS_WIDTH/2,-CANVAS_HEIGHT/2 - CANVAS_ELEVATION,CANVAS_WIDTH,CANVAS_HEIGHT);
-            CanvasRect.Graphics.endFill();
-        }
-
-        return CanvasRect;
-    }
-    canvasRect = CanvasRect();
-
     var DiodeLines = function() {
         var DiodeLines = Drawable();
 
@@ -161,7 +144,7 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
         }
         return DiodeLines;
     }
-    diodeLines = DiodeLines();
+    var diodeLines = DiodeLines();
 
     var DiodeRects = function() {
         var DiodeRects = Drawable();
@@ -180,7 +163,7 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
 
         return DiodeRects;
     }
-    diodeRects = DiodeRects();
+    var diodeRects = DiodeRects();
 
     var Ground = function() {
         var Ground = Drawable();
@@ -209,7 +192,7 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
 
         return Ground;
     }
-    ground = Ground();
+    var ground = Ground();
 
     var AClogo = function() {
         var AClogo = Drawable();
@@ -232,7 +215,7 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
 
         return AClogo;
     }
-    aclogo = AClogo();
+    var aclogo = AClogo();
 
     var OtherLines = function() {
         var OtherLines = Drawable();
@@ -254,8 +237,59 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
     }
     var otherLines = OtherLines();
 
-    var FIELDLINES_HEIGHT = 40;
-    var FIELDLINES_SFKLJS = 10;
+    var Field = {
+        POSITION: ddd.Vector(0, 50, 0),
+        WIDTH: 300,
+        HEIGHT: 200,
+        CENTER_HEIGHT: 1,
+        SLOPE_HEIGHT: 0.5,
+
+        getPositionAt: function(x, y) {
+            return ddd.Vector(x/2 * Field.WIDTH, -y/2 * Field.HEIGHT).add(Field.POSITION);
+        },
+
+        getKeyPositionAt: function(x, y) {
+            var X, Y;
+
+            if (x == 0) {
+                X = -1;
+            } else if (x == 1) {
+                X = -1 + settings.voltage;
+            } else if (x == 2) {
+                X = 0;
+            } else if (x == 3) {
+                X = 1 - settings.voltage;
+            } else {
+                X = 1;
+            }
+
+            if (y == 0) {
+                Y = 1;
+            } else if (y == 1) {
+                Y = Field.CENTER_HEIGHT / 2 + Field.SLOPE_HEIGHT / 2;
+            } else if (y == 2) {
+                Y = Field.CENTER_HEIGHT / 2;
+            } else if (y == 3) {
+                Y = Field.CENTER_HEIGHT / 2 - Field.SLOPE_HEIGHT / 2;
+            } else if (y == 4) {
+                Y = Field.CENTER_HEIGHT / 2 - Field.SLOPE_HEIGHT / 2 - (1 - Field.CENTER_HEIGHT / 2 - Field.SLOPE_HEIGHT / 2);
+            } else if (y == 5) {
+                Y = 0;
+            } else if (y == 6) {
+                Y = -1 * (Field.CENTER_HEIGHT / 2 - Field.SLOPE_HEIGHT / 2 - (1 - Field.CENTER_HEIGHT / 2 - Field.SLOPE_HEIGHT / 2));
+            } else if (y == 7) {
+                Y = -Field.CENTER_HEIGHT / 2 + Field.SLOPE_HEIGHT / 2;
+            } else if (y == 8) {
+                Y = -Field.CENTER_HEIGHT / 2;
+            } else if (y == 9) {
+                Y = -Field.CENTER_HEIGHT / 2 - Field.SLOPE_HEIGHT / 2;
+            } else {
+                Y = -1;
+            }
+
+            return Field.getPositionAt(X, Y);
+        }
+    }
 
     var FieldLines = function() {
         var FieldLines = Drawable();
@@ -264,57 +298,50 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
             FieldLines.Graphics.clear();
 
             FieldLines.Graphics.lineStyle(1, 0x000000, 1);
-            FieldLines.Graphics.moveTo(0, FIELDLINES_HEIGHT / 2);
-            FieldLines.Graphics.lineTo(0, -FIELDLINES_HEIGHT / 2);
+            FieldLines.Graphics.moveTo(0, Field.getKeyPositionAt(0, 2).y);
+            FieldLines.Graphics.lineTo(0, Field.getKeyPositionAt(0, 8).y);
 
-            FieldLines.Graphics.moveTo(-DIODE_WIDTH / 2, -FIELDLINES_HEIGHT / 2 - FIELDLINES_SFKLJS);
-            FieldLines.Graphics.lineTo(-DIODE_WIDTH / 2 + DIODE_WIDTH/2*settings.voltage, -FIELDLINES_HEIGHT / 2 - FIELDLINES_SFKLJS);
+            var topLeftLineFrom = Field.getKeyPositionAt(0, 1);
+            var topLeftLineTo = Field.getKeyPositionAt(1, 1);
+            FieldLines.Graphics.moveTo(topLeftLineFrom.x, topLeftLineFrom.y);
+            FieldLines.Graphics.lineTo(topLeftLineTo.x, topLeftLineTo.y);
 
-            FieldLines.Graphics.moveTo(DIODE_WIDTH / 2, -FIELDLINES_HEIGHT / 2 + FIELDLINES_SFKLJS);
-            FieldLines.Graphics.lineTo(DIODE_WIDTH / 2 - DIODE_WIDTH/2*settings.voltage, -FIELDLINES_HEIGHT / 2 + FIELDLINES_SFKLJS);
+            var topRightLineFrom = Field.getKeyPositionAt(3, 3);
+            var topRightLineTo = Field.getKeyPositionAt(4, 3);
+            FieldLines.Graphics.moveTo(topRightLineFrom.x, topRightLineFrom.y);
+            FieldLines.Graphics.lineTo(topRightLineTo.x, topRightLineTo.y);
 
-            FieldLines.Graphics.moveTo(-DIODE_WIDTH / 2, FIELDLINES_HEIGHT / 2 - FIELDLINES_SFKLJS);
-            FieldLines.Graphics.lineTo(-DIODE_WIDTH / 2 + DIODE_WIDTH/2*settings.voltage, FIELDLINES_HEIGHT / 2 - FIELDLINES_SFKLJS);
+            var bottomRightLineFrom = Field.getKeyPositionAt(0, 7);
+            var bottomRightLineTo = Field.getKeyPositionAt(1, 7);
+            FieldLines.Graphics.moveTo(bottomRightLineFrom.x, bottomRightLineFrom.y);
+            FieldLines.Graphics.lineTo(bottomRightLineTo.x, bottomRightLineTo.y);
 
-            FieldLines.Graphics.moveTo(DIODE_WIDTH / 2, FIELDLINES_HEIGHT / 2 + FIELDLINES_SFKLJS);
-            FieldLines.Graphics.lineTo(DIODE_WIDTH / 2 - DIODE_WIDTH/2*settings.voltage, FIELDLINES_HEIGHT / 2 + FIELDLINES_SFKLJS);
+            var bottomLeftLineFrom = Field.getKeyPositionAt(3, 9);
+            var bottomLeftLineTo = Field.getKeyPositionAt(4, 9);
+            FieldLines.Graphics.moveTo(bottomLeftLineFrom.x, bottomLeftLineFrom.y);
+            FieldLines.Graphics.lineTo(bottomLeftLineTo.x, bottomLeftLineTo.y);
         }
 
         return FieldLines;
     }
     var fieldLines = FieldLines();
 
-    var topBezier = Bezier(ddd.Vector(-DIODE_WIDTH / 2 + DIODE_WIDTH / 2 * settings.voltage, -FIELDLINES_HEIGHT / 2 - FIELDLINES_SFKLJS, 0),
-                           ddd.Vector(0, -FIELDLINES_HEIGHT / 2 - FIELDLINES_SFKLJS, 0),
-                           ddd.Vector(0, -FIELDLINES_HEIGHT / 2 + FIELDLINES_SFKLJS, 0),
-                           ddd.Vector(DIODE_WIDTH / 2 - DIODE_WIDTH / 2 * settings.voltage, -FIELDLINES_HEIGHT / 2 + FIELDLINES_SFKLJS, 0),
-                           0x000000, 10);
+    var CanvasRect = function() {
+        var CanvasRect = Drawable();
 
-    var bottomBezier = Bezier(ddd.Vector(-DIODE_WIDTH / 2 + DIODE_WIDTH / 2 * settings.voltage, FIELDLINES_HEIGHT / 2 - FIELDLINES_SFKLJS, 0),
-                              ddd.Vector(0, FIELDLINES_HEIGHT / 2 - FIELDLINES_SFKLJS, 0),
-                              ddd.Vector(0, FIELDLINES_HEIGHT / 2 + FIELDLINES_SFKLJS, 0),
-                              ddd.Vector(DIODE_WIDTH / 2 - DIODE_WIDTH / 2 * settings.voltage, FIELDLINES_HEIGHT / 2 + FIELDLINES_SFKLJS, 0),
-                              0x000000, 10);
+        CanvasRect.draw = function() {
+            CanvasRect.Graphics.clear();
 
-    var textureTopLeft = CanvasTexture();
-    textureTopLeft.createCanvas(10, 10);
-    textureTopLeft.setPosition(-DIODE_WIDTH/2, -FIELDLINES_HEIGHT / 2 - FIELDLINES_SFKLJS*4, DIODE_WIDTH/2*settings.voltage, FIELDLINES_SFKLJS * 3);
-    textureTopLeft.draw();
+            CanvasRect.Graphics.beginFill(0xddffff);
+            CanvasRect.Graphics.drawRect(Field.getPositionAt(-1, 1).x,
+                                         Field.getPositionAt(-1, 1).y,
+                                         Field.WIDTH, Field.HEIGHT);
+            CanvasRect.Graphics.endFill();
+        }
 
-    var textureTopRight = CanvasTexture();
-    textureTopRight.createCanvas(10, 10);
-    textureTopRight.setPosition(DIODE_WIDTH/2 - DIODE_WIDTH/2*settings.voltage, -FIELDLINES_HEIGHT / 2 - FIELDLINES_SFKLJS*2, DIODE_WIDTH/2*settings.voltage, FIELDLINES_SFKLJS * 3);
-    textureTopRight.draw();
-
-    var textureBottomLeft = CanvasTexture();
-    textureBottomLeft.createCanvas(10, 10);
-    textureBottomLeft.setPosition(-DIODE_WIDTH/2, +FIELDLINES_HEIGHT / 2 - FIELDLINES_SFKLJS, DIODE_WIDTH/2*settings.voltage, FIELDLINES_SFKLJS * 3);
-    textureBottomLeft.draw();
-
-    var textureBottomRight = CanvasTexture();
-    textureBottomRight.createCanvas(10, 10);
-    textureBottomRight.setPosition(DIODE_WIDTH/2 - DIODE_WIDTH/2*settings.voltage, +FIELDLINES_HEIGHT / 2 + FIELDLINES_SFKLJS, DIODE_WIDTH/2*settings.voltage, FIELDLINES_SFKLJS * 3);
-    textureBottomRight.draw();
+        return CanvasRect;
+    }
+    var canvasRect = CanvasRect();
 
 
     var electronTextureCanvas = document.createElement('canvas');
@@ -334,9 +361,6 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
     ctx.arc(5, 5, 5, 0, 2 * Math.PI, false);
     ctx.fillStyle = '#ff3333';
     ctx.fill();
-
-    var electronContainer = new PIXI.particles.ParticleContainer(9999);
-    var electrons = [];
 
     var Electron = function() {
         var Electron = Drawable();
@@ -407,38 +431,11 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
         return EnergyField;
     }
 
-    var anEnergyField = EnergyField(Bezier(ddd.Vector(-100, 100, 0),
-                                           ddd.Vector(-100, 0, 0),
-                                           ddd.Vector(200, 200, 0),
-                                           ddd.Vector(200, 0, 0),
-                                           0xffffff, 1000));
-
-
     var callbacks = {
         setVoltage: function(val) {
             settings.voltage = val;
             diodeRects.draw();
             fieldLines.draw();
-
-            topBezier.p1 = ddd.Vector(-DIODE_WIDTH / 2 + DIODE_WIDTH / 2 * settings.voltage, -FIELDLINES_HEIGHT / 2 - FIELDLINES_SFKLJS, 0);
-            topBezier.p4 = ddd.Vector(DIODE_WIDTH / 2 - DIODE_WIDTH / 2 * settings.voltage, -FIELDLINES_HEIGHT / 2 + FIELDLINES_SFKLJS, 0);
-            topBezier.draw();
-
-            bottomBezier.p1 = ddd.Vector(-DIODE_WIDTH / 2 + DIODE_WIDTH / 2 * settings.voltage, FIELDLINES_HEIGHT / 2 - FIELDLINES_SFKLJS, 0);
-            bottomBezier.p4 = ddd.Vector(DIODE_WIDTH / 2 - DIODE_WIDTH / 2 * settings.voltage, FIELDLINES_HEIGHT / 2 + FIELDLINES_SFKLJS, 0);
-            bottomBezier.draw();
-
-            textureTopRight.setPosition(DIODE_WIDTH/2 - DIODE_WIDTH/2*settings.voltage, -FIELDLINES_HEIGHT / 2 - FIELDLINES_SFKLJS*2, DIODE_WIDTH/2*settings.voltage, FIELDLINES_SFKLJS * 3);
-            textureTopRight.draw();
-
-            textureTopLeft.setPosition(-DIODE_WIDTH/2, -FIELDLINES_HEIGHT / 2 - FIELDLINES_SFKLJS*4, DIODE_WIDTH/2*settings.voltage, FIELDLINES_SFKLJS * 3);
-            textureTopLeft.draw();
-
-            textureBottomRight.setPosition(DIODE_WIDTH/2 - DIODE_WIDTH/2*settings.voltage, +FIELDLINES_HEIGHT / 2 + FIELDLINES_SFKLJS, DIODE_WIDTH/2*settings.voltage, FIELDLINES_SFKLJS * 3);
-            textureBottomRight.draw();
-
-            textureBottomLeft.setPosition(-DIODE_WIDTH/2, +FIELDLINES_HEIGHT / 2 - FIELDLINES_SFKLJS, DIODE_WIDTH/2*settings.voltage, FIELDLINES_SFKLJS * 3);
-            textureBottomLeft.draw();
         },
 
         setLeakage: function(val) {
@@ -464,40 +461,22 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
 
     animation.onLoad = function() {
 
-        canvasRect.draw();
-        diodeLines.draw();
-        diodeRects.draw();
-        ground.draw();
-        aclogo.draw();
-        otherLines.draw();
-        fieldLines.draw();
-        topBezier.draw();
-        bottomBezier.draw();
+        drawables.push(canvasRect);
+        drawables.push(diodeRects);
+        drawables.push(diodeLines);
+        drawables.push(ground);
+        drawables.push(aclogo);
+        drawables.push(otherLines);
+        drawables.push(fieldLines);
 
-        animation.scene.addChild(canvasRect.Graphics);
-        animation.scene.addChild(diodeRects.Graphics);
-        animation.scene.addChild(diodeLines.Graphics);
-        animation.scene.addChild(ground.Graphics);
-        animation.scene.addChild(aclogo.Graphics);
-        animation.scene.addChild(otherLines.Graphics);
-        animation.scene.addChild(fieldLines.Graphics);
-        animation.scene.addChild(topBezier.Graphics);
-        animation.scene.addChild(bottomBezier.Graphics);
-
-        animation.scene.addChild(textureTopLeft.Graphics);
-        animation.scene.addChild(textureTopRight.Graphics);
-        animation.scene.addChild(textureBottomLeft.Graphics);
-        animation.scene.addChild(textureBottomRight.Graphics);
-
-        animation.scene.addChild(electronContainer);
-
-        anEnergyField.populate(1000);
+        for (var i = 0; i < drawables.length; i++) {
+            drawables[i].draw();
+            animation.scene.addChild(drawables[i].Graphics);
+        }
     }
 
     animation.onRender = function() {
-        anEnergyField.tick();
     }
-
 
     animation.settings = [
         controls.Text('Voltage'),
