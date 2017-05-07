@@ -140,7 +140,7 @@ define(['./util'], function(util) {
             return control;
         },
 
-        Range: function(value, min, step, max, callback) {
+        Range: function(value, min, step, max, callback, continous) {
 
             var control = controls.Control();
 
@@ -155,7 +155,7 @@ define(['./util'], function(util) {
 
                 range.val(value);
 
-                range.on('input', function() {
+                range.on((continous ? 'input' : 'change'), function() {
                     callback(parseFloat(range.val()));
                 });
 
