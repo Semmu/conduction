@@ -196,28 +196,36 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
     }
     var ground = Ground();
 
-    var AClogo = function() {
-        var AClogo = Drawable();
+    var DClogo = function() {
+        var DClogo = Drawable();
 
-        AClogo.POSITION = {
+        DClogo.POSITION = {
             x: -180.0,
             y: 0.0 - DIODE_ELEVATION
         }
-        AClogo.RADIUS = 10.0;
+        DClogo.SIZE = 10.0;
 
 
-        AClogo.draw = function() {
-            AClogo.Graphics.clear();
+        DClogo.draw = function() {
+            DClogo.Graphics.clear();
 
-            AClogo.Graphics.lineStyle(1, 0x000000, 1);
-            AClogo.Graphics.drawCircle(AClogo.POSITION.x, AClogo.POSITION.y, AClogo.RADIUS);
-            AClogo.Graphics.arc(AClogo.POSITION.x + AClogo.RADIUS/3, AClogo.POSITION.y, AClogo.RADIUS/3, 0, Math.PI);
-            AClogo.Graphics.arc(AClogo.POSITION.x - AClogo.RADIUS/3, AClogo.POSITION.y, AClogo.RADIUS/3, 0, Math.PI, true);
+            DClogo.Graphics.lineStyle(1, 0x000000, 1);
+            DClogo.Graphics.moveTo(DClogo.POSITION.x - DClogo.SIZE / 2, DClogo.POSITION.y - DClogo.SIZE);
+            DClogo.Graphics.lineTo(DClogo.POSITION.x - DClogo.SIZE / 2, DClogo.POSITION.y + DClogo.SIZE);
+
+            DClogo.Graphics.moveTo(DClogo.POSITION.x - DClogo.SIZE / 2 + DClogo.SIZE / 3, DClogo.POSITION.y - DClogo.SIZE / 2);
+            DClogo.Graphics.lineTo(DClogo.POSITION.x - DClogo.SIZE / 2 + DClogo.SIZE / 3, DClogo.POSITION.y + DClogo.SIZE / 2);
+
+            DClogo.Graphics.moveTo(DClogo.POSITION.x - DClogo.SIZE / 2 + DClogo.SIZE / 3 * 2, DClogo.POSITION.y - DClogo.SIZE);
+            DClogo.Graphics.lineTo(DClogo.POSITION.x - DClogo.SIZE / 2 + DClogo.SIZE / 3 * 2, DClogo.POSITION.y + DClogo.SIZE);
+
+            DClogo.Graphics.moveTo(DClogo.POSITION.x + DClogo.SIZE / 2, DClogo.POSITION.y - DClogo.SIZE / 2);
+            DClogo.Graphics.lineTo(DClogo.POSITION.x + DClogo.SIZE / 2, DClogo.POSITION.y + DClogo.SIZE / 2);
         }
 
-        return AClogo;
+        return DClogo;
     }
-    var aclogo = AClogo();
+    var dclogo = DClogo();
 
     var OtherLines = function() {
         var OtherLines = Drawable();
@@ -232,7 +240,7 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
             OtherLines.Graphics.lineTo(ground.POSITION.x, ground.POSITION.y - ground.HEIGHT / 2);
 
             OtherLines.Graphics.moveTo(-DIODE_WIDTH/2, -DIODE_ELEVATION);
-            OtherLines.Graphics.lineTo(aclogo.POSITION.x + aclogo.RADIUS, -DIODE_ELEVATION);
+            OtherLines.Graphics.lineTo(dclogo.POSITION.x + dclogo.SIZE, -DIODE_ELEVATION);
         }
 
         return OtherLines;
@@ -797,7 +805,7 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
         drawables.push(diodeRects);
         drawables.push(diodeLines);
         drawables.push(ground);
-        drawables.push(aclogo);
+        drawables.push(dclogo);
         drawables.push(otherLines);
         drawables.push(fieldLines);
         drawables.push(fieldTopSlope);
