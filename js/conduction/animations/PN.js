@@ -345,20 +345,52 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
     var fieldTopSlope = FieldTopSlope();
 
     var FieldBottomSlope = function() {
-        var FieldBottomSlope = Bezier(Field.getKeyPositionAt(1, 7),
-                                   Field.getKeyPositionAt(2, 7),
+        var FieldBottomSlope = Bezier(Field.getKeyPositionAt(3, 9),
                                    Field.getKeyPositionAt(2, 9),
-                                   Field.getKeyPositionAt(3, 9),
+                                   Field.getKeyPositionAt(2, 7),
+                                   Field.getKeyPositionAt(1, 7),
                                    0x000000, 1000, 30);
 
         FieldBottomSlope.updateCPs = function() {
-            FieldBottomSlope.p1 = Field.getKeyPositionAt(1, 7);
-            FieldBottomSlope.p4 = Field.getKeyPositionAt(3, 9);
+            FieldBottomSlope.p1 = Field.getKeyPositionAt(3, 9);
+            FieldBottomSlope.p4 = Field.getKeyPositionAt(1, 7);
         }
 
         return FieldBottomSlope;
     }
     var fieldBottomSlope = FieldBottomSlope();
+
+    var TopInjectionCurve = function() {
+        var TopInjectionCurve = Bezier(Field.getKeyPositionAt(3, 1),
+                                       Field.getKeyPositionAt(2, 1),
+                                       Field.getKeyPositionAt(2, 1),
+                                       Field.getKeyPositionAt(1, 1),
+                                       0x000000, 1000, 30);
+
+        TopInjectionCurve.updateCPs = function() {
+            TopInjectionCurve.p1 = Field.getKeyPositionAt(3, 1);
+            TopInjectionCurve.p4 = Field.getKeyPositionAt(1, 1);
+        }
+
+        return TopInjectionCurve;
+    }
+    var topInjectionCurve = TopInjectionCurve();
+
+    var BottomInjectionCurve = function() {
+        var BottomInjectionCurve = Bezier(Field.getKeyPositionAt(1, 9),
+                                       Field.getKeyPositionAt(2, 9),
+                                       Field.getKeyPositionAt(2, 9),
+                                       Field.getKeyPositionAt(3, 9),
+                                       0x000000, 1000, 30);
+
+        BottomInjectionCurve.updateCPs = function() {
+            BottomInjectionCurve.p1 = Field.getKeyPositionAt(1, 9);
+            BottomInjectionCurve.p4 = Field.getKeyPositionAt(3, 9);
+        }
+
+        return BottomInjectionCurve;
+    }
+    var bottomInjectionCurve = BottomInjectionCurve();
 
     var CanvasRect = function() {
         var CanvasRect = Drawable();
@@ -511,7 +543,7 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
             trajectory: trajectory,
             elements: [],
 
-            speed: 0.001,
+            speed: 0.003,
 
             spawn: function() {
                 console.error('missing ParticleField::spawn implementation');
@@ -572,6 +604,28 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
     }
     var topLeakage = TopLeakage();
 
+    var TopInjection = function() {
+        var TopInjection = ParticleField(topInjectionCurve);
+
+        TopInjection.spawn = function() {
+            return ElectronInField(ddd.Vector(0, (Field.getKeyPositionAt(0, 0).y - Field.getKeyPositionAt(0, 1).y) * Math.pow(Math.random(), 2.5), 0));
+        }
+
+        return TopInjection;
+    }
+    var topInjection = TopInjection();
+
+    var BottomInjection = function() {
+        var BottomInjection = ParticleField(bottomInjectionCurve);
+
+        BottomInjection.spawn = function() {
+            return HoleInField(ddd.Vector(0, (Field.getKeyPositionAt(0, 10).y - Field.getKeyPositionAt(0, 9).y) * Math.pow(Math.random(), 2.5), 0));
+        }
+
+        return BottomInjection;
+    }
+    var bottomInjection = BottomInjection();
+
     var BottomLeakage = function() {
         var BottomLeakage = ParticleField(fieldBottomSlope);
 
@@ -592,6 +646,10 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
             fieldTopSlope.draw();
             fieldBottomSlope.updateCPs();
             fieldBottomSlope.draw();
+            topInjectionCurve.updateCPs();
+            topInjectionCurve.calculateCache();
+            bottomInjectionCurve.updateCPs();
+            bottomInjectionCurve.calculateCache();
             topLeftCanvas.updateMetrics();
             topLeftCanvas.draw();
             topRightCanvas.updateMetrics();
@@ -645,11 +703,15 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
         }
 
         topLeakage.populate(1000);
+        topInjection.populate(1000);
+        bottomInjection.populate(1000);
         bottomLeakage.populate(1000);
     }
 
     animation.onRender = function() {
         topLeakage.tick();
+        topInjection.tick();
+        bottomInjection.tick();
         bottomLeakage.tick();
     }
 
