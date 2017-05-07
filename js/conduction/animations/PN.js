@@ -776,6 +776,8 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
             bottomLeftCanvas.draw();
             bottomRightCanvas.updateMetrics();
             bottomRightCanvas.draw();
+            leftRecombination.populate(500);
+            rightRecombination.populate(500);
         },
 
         setLeakage: function(val) {
