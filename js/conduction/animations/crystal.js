@@ -282,9 +282,9 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
         controls.Text('Rotation'),
         controls.Checkbox('Auto rotation', autoRotate, function(val) {autoRotate = val;}),
         controls.Text('Speed'),
-        controls.Range(rotateSpeed, 1, 0.01, 10, function(val) {rotateSpeed=val;}),
+        controls.Range(rotateSpeed, 1, 0.01, 10, function(val) {rotateSpeed=val;}, true),
         controls.Text('Distance'),
-        controls.Range(Grid.Position.z, -100, 1, 500, function(val) {Grid.Position.z=val;})
+        controls.Range(Grid.Position.z, -100, 1, 500, function(val) {Grid.Position.z=val;}, true)
     ];
 
     return animation;
