@@ -92,7 +92,9 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
         Bezier.cacheLOD = (cacheLOD ? cacheLOD : 1000);
         Bezier.cache = [];
 
-        Bezier.drawLOD = (drawLOD ? (drawLOD > Bezier.cacheLOD ? Bezier.cacheLOD : Bezier.drawLOD) : Bezier.cacheLOD);
+        Bezier.drawLOD = (drawLOD ? drawLOD : Bezier.cacheLOD);
+        if (Bezier.drawLOD > Bezier.cacheLOD)
+            Bezier.drawLOD = Bezier.cacheLOD;
 
         Bezier.getPointAtT = function(t) {
             return Bezier.cache[Math.floor(t * Bezier.cacheLOD)];
@@ -242,7 +244,7 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
         WIDTH: 300,
         HEIGHT: 200,
         CENTER_HEIGHT: 0.7,
-        SLOPE_HEIGHT: 0.3,
+        SLOPE_HEIGHT: 0.7,
 
         getPositionAt: function(x, y) {
             return ddd.Vector(x/2 * Field.WIDTH, -y/2 * Field.HEIGHT).add(Field.POSITION);
@@ -331,7 +333,7 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
                                    Field.getKeyPositionAt(2, 1),
                                    Field.getKeyPositionAt(2, 3),
                                    Field.getKeyPositionAt(3, 3),
-                                   0x000000, 10);
+                                   0x000000, 1000, 30);
 
         FieldTopSlope.updateCPs = function() {
             FieldTopSlope.p1 = Field.getKeyPositionAt(1, 1);
@@ -347,7 +349,7 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
                                    Field.getKeyPositionAt(2, 7),
                                    Field.getKeyPositionAt(2, 9),
                                    Field.getKeyPositionAt(3, 9),
-                                   0x000000, 10);
+                                   0x000000, 1000, 30);
 
         FieldBottomSlope.updateCPs = function() {
             FieldBottomSlope.p1 = Field.getKeyPositionAt(1, 7);
@@ -465,74 +467,121 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
     ctx.fillStyle = '#ff3333';
     ctx.fill();
 
+    var ParticleFromCanvas = function(canvas) {
+        var Particle = Drawable();
+        Particle.Graphics = new PIXI.Sprite(PIXI.Texture.fromCanvas(canvas));
+        Particle.Graphics.width = 1;
+        Particle.Graphics.height = 1;
+        return Particle;
+    }
+
+    var ParticleInField = function(ParticleConstructor, offset) {
+        var ParticleInField = ParticleConstructor();
+
+        ParticleInField.offset = offset;
+        ParticleInField.distance = 0;
+
+        ParticleInField.setGraphicsPosition = function(x, y) {
+            ParticleInField.Graphics.x = x;
+            ParticleInField.Graphics.y = y;
+        }
+
+        return ParticleInField;
+    }
+
     var Electron = function() {
-        var Electron = Drawable();
-        Electron.Graphics = new PIXI.Sprite(PIXI.Texture.fromCanvas(electronTextureCanvas));
-        Electron.Graphics.width = 1;
-        Electron.Graphics.height = 1;
-        return Electron;
+        return ParticleFromCanvas(electronTextureCanvas);
+    }
+
+    var Hole = function() {
+        return ParticleFromCanvas(holeTextureCanvas);
     }
 
     var ElectronInField = function(offset) {
-        var ElectronInField = Electron();
-
-        ElectronInField.offset = offset;
-        ElectronInField.distance = 0;
-
-        ElectronInField.setGraphicsPosition = function(x, y) {
-            ElectronInField.Graphics.x = x;
-            ElectronInField.Graphics.y = y;
-        }
-
-        return ElectronInField;
+        return ParticleInField(Electron, offset);
     }
 
-    var EnergyField = function(trajectory) {
-        var EnergyField = {
+    var HoleInField = function(offset) {
+        return ParticleInField(Hole, offset);
+    }
+
+    var ParticleField = function(trajectory) {
+        var ParticleField = {
             count: 0,
             trajectory: trajectory,
             elements: [],
 
             speed: 0.001,
 
+            spawn: function() {
+                console.error('missing ParticleField::spawn implementation');
+            },
+
             populate: function(count) {
-                if (EnergyField.count > 0) {
-                    for (var i = 0; i < EnergyField.elements.length; i++) {
-                        animation.scene.removeChild(EnergyField.elements[i].Graphics);
+                if (ParticleField.count > 0) {
+                    for (var i = 0; i < ParticleField.elements.length; i++) {
+                        animation.scene.removeChild(ParticleField.elements[i].Graphics);
                     }
-                    EnergyField.elements = [];
+                    ParticleField.elements = [];
                 }
 
-                EnergyField.count = count;
+                ParticleField.count = count;
                 for (var i = 0; i < count; i++) {
-                    var randomOffset = ddd.Vector(Math.random() - 0.5, Math.random() - 0.5, 0);
-                    var offsetLength = 15;
-                    var anelem = ElectronInField(randomOffset.scale(offsetLength));
+                    var anelem = ParticleField.spawn();
                     anelem.distance = Math.random();
-
-                    EnergyField.elements.push(anelem);
+                    ParticleField.elements.push(anelem);
                     animation.scene.addChild(anelem.Graphics);
                 }
             },
 
             tick: function() {
-                var now = performance.now();
-                for (var i = 0; i < EnergyField.elements.length; i++) {
-                    var el = EnergyField.elements[i];
-                    el.distance += EnergyField.speed;
+                for (var i = 0; i < ParticleField.elements.length; i++) {
+                    var el = ParticleField.elements[i];
+                    el.distance += ParticleField.speed;
                     if (el.distance > 1)
                         el.distance--;
 
-                    var trajectoryPosition = EnergyField.trajectory.getPointAtT(el.distance);
+                    var trajectoryPosition = ParticleField.trajectory.getPointAtT(el.distance);
                     var trajectoryPositionWithOffset = el.offset.add(trajectoryPosition);
                     el.setGraphicsPosition(trajectoryPositionWithOffset.x, trajectoryPositionWithOffset.y);
                 }
-                //console.log(performance.now() - now);
             }
         };
 
-        return EnergyField;
+        return ParticleField;
     }
+
+    var VariableParticleField = function() {
+        var VariableParticleField = ParticleField();
+
+        VariableParticleField.updateTrajectory = function() {
+            console.error('missing VariableParticleField::updateTrajectory implementation');
+        }
+
+        return VariableParticleField;
+    }
+
+    var TopLeakage = function() {
+        var TopLeakage = ParticleField(fieldTopSlope);
+
+        TopLeakage.spawn = function() {
+            return ElectronInField(ddd.Vector(0, (Field.getKeyPositionAt(0, 0).y - Field.getKeyPositionAt(0, 1).y) * Math.pow(Math.random(), 2.5), 0));
+        }
+
+        return TopLeakage;
+    }
+    var topLeakage = TopLeakage();
+
+    var BottomLeakage = function() {
+        var BottomLeakage = ParticleField(fieldBottomSlope);
+
+        BottomLeakage.spawn = function() {
+            return HoleInField(ddd.Vector(0, -1 * (Field.getKeyPositionAt(0, 9).y - Field.getKeyPositionAt(0, 10).y) * Math.pow(Math.random(), 2.5), 0));
+        }
+
+        return BottomLeakage;
+    }
+    var bottomLeakage = BottomLeakage();
 
     var callbacks = {
         setVoltage: function(val) {
@@ -594,9 +643,14 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
             drawables[i].draw();
             animation.scene.addChild(drawables[i].Graphics);
         }
+
+        topLeakage.populate(1000);
+        bottomLeakage.populate(1000);
     }
 
     animation.onRender = function() {
+        topLeakage.tick();
+        bottomLeakage.tick();
     }
 
     animation.settings = [
