@@ -434,11 +434,11 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
         CanvasRect.draw = function() {
             CanvasRect.Graphics.clear();
 
-            CanvasRect.Graphics.beginFill(0xddffff);
+            /*CanvasRect.Graphics.beginFill(0xddffff);
             CanvasRect.Graphics.drawRect(Field.getPositionAt(-1, 1).x,
                                          Field.getPositionAt(-1, 1).y,
                                          Field.WIDTH, Field.HEIGHT);
-            CanvasRect.Graphics.endFill();
+            CanvasRect.Graphics.endFill();*/
         }
 
         return CanvasRect;
@@ -448,7 +448,7 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
     var TopLeftCanvas = function() {
         var TopLeftCanvas = CanvasTexture();
 
-        TopLeftCanvas.createCanvas(10, 10);
+        TopLeftCanvas.createCanvas(1, 100);
         TopLeftCanvas.drawOnCanvas();
 
         TopLeftCanvas.drawOnCanvas = function() {
@@ -457,7 +457,7 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
 
             for (var x = 0; x < TopLeftCanvas.canvas.width; x++) {
                 for (var y = 0; y < TopLeftCanvas.canvas.height; y++) {
-                    ctx.fillStyle = 'hsl(220, '+((Math.random()/2+0.5)*100)+'%, 50%)';
+                    ctx.fillStyle = 'rgba(0, 100, 255, '+( Math.pow(y / TopLeftCanvas.canvas.height, 2) )+')';
                     ctx.fillRect(x, y, 1, 1);
                 }
             }
@@ -478,7 +478,7 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
     var TopRightCanvas = function() {
         var TopRightCanvas = CanvasTexture();
 
-        TopRightCanvas.createCanvas(10, 10);
+        TopRightCanvas.createCanvas(1, 100);
         TopRightCanvas.drawOnCanvas();
 
         TopRightCanvas.drawOnCanvas = function() {
@@ -487,7 +487,7 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
 
             for (var x = 0; x < TopRightCanvas.canvas.width; x++) {
                 for (var y = 0; y < TopRightCanvas.canvas.height; y++) {
-                    ctx.fillStyle = 'hsl(220, '+((Math.random()/2+0.5)*100)+'%, 50%)';
+                    ctx.fillStyle = 'rgba(0, 100, 255, '+( Math.pow(y / TopRightCanvas.canvas.height, 1) )+')';
                     ctx.fillRect(x, y, 1, 1);
                 }
             }
@@ -508,7 +508,7 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
     var BottomLeftCanvas = function() {
         var BottomLeftCanvas = CanvasTexture();
 
-        BottomLeftCanvas.createCanvas(10, 10);
+        BottomLeftCanvas.createCanvas(1, 100);
         BottomLeftCanvas.drawOnCanvas();
 
         BottomLeftCanvas.drawOnCanvas = function() {
@@ -517,7 +517,7 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
 
             for (var x = 0; x < BottomLeftCanvas.canvas.width; x++) {
                 for (var y = 0; y < BottomLeftCanvas.canvas.height; y++) {
-                    ctx.fillStyle = 'hsl(0, '+((Math.random()/2+0.5)*100)+'%, 50%)';
+                    ctx.fillStyle = 'rgba(255, 50, 50, '+( 1-Math.pow(y / BottomLeftCanvas.canvas.height, 1) )+')';
                     ctx.fillRect(x, y, 1, 1);
                 }
             }
@@ -538,7 +538,7 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
     var BottomRightCanvas = function() {
         var BottomRightCanvas = CanvasTexture();
 
-        BottomRightCanvas.createCanvas(10, 10);
+        BottomRightCanvas.createCanvas(1, 100);
         BottomRightCanvas.drawOnCanvas();
 
         BottomRightCanvas.drawOnCanvas = function() {
@@ -547,7 +547,7 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
 
             for (var x = 0; x < BottomRightCanvas.canvas.width; x++) {
                 for (var y = 0; y < BottomRightCanvas.canvas.height; y++) {
-                    ctx.fillStyle = 'hsl(0, '+((Math.random()/2+0.5)*100)+'%, 50%)';
+                    ctx.fillStyle = 'rgba(255, 50, 50, '+( 1-Math.pow(y / BottomRightCanvas.canvas.height, 0.7) )+')';
                     ctx.fillRect(x, y, 1, 1);
                 }
             }
@@ -812,12 +812,12 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
             animation.scene.addChild(drawables[i].Graphics);
         }
 
-        topLeakage.populate(1000);
-        topInjection.populate(1000);
-        bottomInjection.populate(1000);
-        bottomLeakage.populate(1000);
-        leftRecombination.populate(1000);
-        rightRecombination.populate(1000);
+        topLeakage.populate(500);
+        topInjection.populate(500);
+        bottomInjection.populate(500);
+        bottomLeakage.populate(500);
+        leftRecombination.populate(500);
+        rightRecombination.populate(500);
     }
 
     animation.onRender = function() {
