@@ -55,7 +55,7 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
 
             for (var x = 0; x < CanvasTexture.canvas.width; x++) {
                 for (var y = 0; y < CanvasTexture.canvas.height; y++) {
-                    ctx.fillStyle = 'hsl(' + 360 * Math.random() + ', 50%, 50%)';
+                    ctx.fillStyle = 'hsl(' + 360 * Math.random() + ', 70%, 70%)';
                     ctx.fillRect(x, y, 1, 1);
                 }
             }
@@ -375,6 +375,77 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
     }
     var canvasRect = CanvasRect();
 
+    var TopLeftCanvas = function() {
+        var TopLeftCanvas = CanvasTexture();
+
+        TopLeftCanvas.createCanvas(10, 10);
+        TopLeftCanvas.drawOnCanvas();
+
+        TopLeftCanvas.updateMetrics = function() {
+            TopLeftCanvas.setPosition(Field.getKeyPositionAt(0, 0).x,
+                                      Field.getKeyPositionAt(0, 0).y,
+                                      Field.getKeyPositionAt(1, 1).x - Field.getKeyPositionAt(0, 0).x,
+                                      Field.getKeyPositionAt(1, 1).y - Field.getKeyPositionAt(0, 0).y);
+        }
+        TopLeftCanvas.updateMetrics();
+
+        return TopLeftCanvas;
+    }
+    var topLeftCanvas = TopLeftCanvas();
+
+    var TopRightCanvas = function() {
+        var TopRightCanvas = CanvasTexture();
+
+        TopRightCanvas.createCanvas(10, 10);
+        TopRightCanvas.drawOnCanvas();
+
+        TopRightCanvas.updateMetrics = function() {
+            TopRightCanvas.setPosition(Field.getKeyPositionAt(3, 0).x,
+                                       Field.getKeyPositionAt(3, 0).y,
+                                       Field.getKeyPositionAt(4, 3).x - Field.getKeyPositionAt(3, 0).x,
+                                       Field.getKeyPositionAt(4, 3).y - Field.getKeyPositionAt(3, 0).y);
+        }
+        TopRightCanvas.updateMetrics();
+
+        return TopRightCanvas;
+    }
+    var topRightCanvas = TopRightCanvas();
+
+    var BottomLeftCanvas = function() {
+        var BottomLeftCanvas = CanvasTexture();
+
+        BottomLeftCanvas.createCanvas(10, 10);
+        BottomLeftCanvas.drawOnCanvas();
+
+        BottomLeftCanvas.updateMetrics = function() {
+            BottomLeftCanvas.setPosition(Field.getKeyPositionAt(0, 7).x,
+                                      Field.getKeyPositionAt(0, 7).y,
+                                      Field.getKeyPositionAt(1, 10).x - Field.getKeyPositionAt(0, 7).x,
+                                      Field.getKeyPositionAt(1, 10).y - Field.getKeyPositionAt(0, 7).y);
+        }
+        BottomLeftCanvas.updateMetrics();
+
+        return BottomLeftCanvas;
+    }
+    var bottomLeftCanvas = BottomLeftCanvas();
+
+    var BottomRightCanvas = function() {
+        var BottomRightCanvas = CanvasTexture();
+
+        BottomRightCanvas.createCanvas(10, 10);
+        BottomRightCanvas.drawOnCanvas();
+
+        BottomRightCanvas.updateMetrics = function() {
+            BottomRightCanvas.setPosition(Field.getKeyPositionAt(3, 9).x,
+                                       Field.getKeyPositionAt(3, 9).y,
+                                       Field.getKeyPositionAt(4, 10).x - Field.getKeyPositionAt(3, 9).x,
+                                       Field.getKeyPositionAt(4, 10).y - Field.getKeyPositionAt(3, 9).y);
+        }
+        BottomRightCanvas.updateMetrics();
+
+        return BottomRightCanvas;
+    }
+    var bottomRightCanvas = BottomRightCanvas();
 
     var electronTextureCanvas = document.createElement('canvas');
     electronTextureCanvas.width = 10;
@@ -472,6 +543,14 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
             fieldTopSlope.draw();
             fieldBottomSlope.updateCPs();
             fieldBottomSlope.draw();
+            topLeftCanvas.updateMetrics();
+            topLeftCanvas.draw();
+            topRightCanvas.updateMetrics();
+            topRightCanvas.draw();
+            bottomLeftCanvas.updateMetrics();
+            bottomLeftCanvas.draw();
+            bottomRightCanvas.updateMetrics();
+            bottomRightCanvas.draw();
         },
 
         setLeakage: function(val) {
@@ -506,6 +585,10 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
         drawables.push(fieldLines);
         drawables.push(fieldTopSlope);
         drawables.push(fieldBottomSlope);
+        drawables.push(topLeftCanvas);
+        drawables.push(topRightCanvas);
+        drawables.push(bottomLeftCanvas);
+        drawables.push(bottomRightCanvas);
 
         for (var i = 0; i < drawables.length; i++) {
             drawables[i].draw();
