@@ -241,8 +241,8 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
         POSITION: ddd.Vector(0, 50, 0),
         WIDTH: 300,
         HEIGHT: 200,
-        CENTER_HEIGHT: 1,
-        SLOPE_HEIGHT: 0.5,
+        CENTER_HEIGHT: 0.7,
+        SLOPE_HEIGHT: 0.3,
 
         getPositionAt: function(x, y) {
             return ddd.Vector(x/2 * Field.WIDTH, -y/2 * Field.HEIGHT).add(Field.POSITION);
@@ -325,6 +325,38 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
         return FieldLines;
     }
     var fieldLines = FieldLines();
+
+    var FieldTopSlope = function() {
+        var FieldTopSlope = Bezier(Field.getKeyPositionAt(1, 1),
+                                   Field.getKeyPositionAt(2, 1),
+                                   Field.getKeyPositionAt(2, 3),
+                                   Field.getKeyPositionAt(3, 3),
+                                   0x000000, 10);
+
+        FieldTopSlope.updateCPs = function() {
+            FieldTopSlope.p1 = Field.getKeyPositionAt(1, 1);
+            FieldTopSlope.p4 = Field.getKeyPositionAt(3, 3);
+        }
+
+        return FieldTopSlope;
+    }
+    var fieldTopSlope = FieldTopSlope();
+
+    var FieldBottomSlope = function() {
+        var FieldBottomSlope = Bezier(Field.getKeyPositionAt(1, 7),
+                                   Field.getKeyPositionAt(2, 7),
+                                   Field.getKeyPositionAt(2, 9),
+                                   Field.getKeyPositionAt(3, 9),
+                                   0x000000, 10);
+
+        FieldBottomSlope.updateCPs = function() {
+            FieldBottomSlope.p1 = Field.getKeyPositionAt(1, 7);
+            FieldBottomSlope.p4 = Field.getKeyPositionAt(3, 9);
+        }
+
+        return FieldBottomSlope;
+    }
+    var fieldBottomSlope = FieldBottomSlope();
 
     var CanvasRect = function() {
         var CanvasRect = Drawable();
@@ -436,6 +468,10 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
             settings.voltage = val;
             diodeRects.draw();
             fieldLines.draw();
+            fieldTopSlope.updateCPs();
+            fieldTopSlope.draw();
+            fieldBottomSlope.updateCPs();
+            fieldBottomSlope.draw();
         },
 
         setLeakage: function(val) {
@@ -468,6 +504,8 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
         drawables.push(aclogo);
         drawables.push(otherLines);
         drawables.push(fieldLines);
+        drawables.push(fieldTopSlope);
+        drawables.push(fieldBottomSlope);
 
         for (var i = 0; i < drawables.length; i++) {
             drawables[i].draw();
