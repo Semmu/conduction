@@ -631,6 +631,7 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
             count: 0,
             trajectory: trajectory,
             elements: [],
+            enabled: true,
 
             speed: 0.003,
 
@@ -656,6 +657,10 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
             },
 
             tick: function() {
+                if (!ParticleField.enabled) {
+                    return;
+                }
+
                 for (var i = 0; i < ParticleField.elements.length; i++) {
                     var el = ParticleField.elements[i];
                     el.distance += ParticleField.speed;
@@ -666,6 +671,19 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
                     var trajectoryPositionWithOffset = el.offset.add(trajectoryPosition);
                     el.setGraphicsPosition(trajectoryPositionWithOffset.x, trajectoryPositionWithOffset.y);
                 }
+            },
+
+            setEnabled: function(toEnable) {
+                if (ParticleField.enabled && !toEnable) {
+                    for (var i = 0; i < ParticleField.elements.length; i++) {
+                        animation.scene.removeChild(ParticleField.elements[i].Graphics);
+                    }
+                } else if (!ParticleField.enabled && toEnable) {
+                    for (var i = 0; i < ParticleField.elements.length; i++) {
+                        animation.scene.addChild(ParticleField.elements[i].Graphics);
+                    }
+                }
+                ParticleField.enabled = toEnable;
             }
         };
 
@@ -748,6 +766,15 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
     }
     var rightRecombination = RightRecombination();
 
+    var setFieldVisibilities = function() {
+        leftRecombination.setEnabled(settings.electrons && settings.recombination);
+        rightRecombination.setEnabled(settings.electrons && settings.recombination);
+        topInjection.setEnabled(settings.electrons && settings.injection);
+        bottomInjection.setEnabled(settings.holes && settings.injection);
+        bottomLeakage.setEnabled(settings.holes && settings.leakage);
+        topLeakage.setEnabled(settings.electrons && settings.leakage);
+    }
+
     var callbacks = {
         setVoltage: function(val) {
             settings.voltage = val;
@@ -785,22 +812,32 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
 
         setLeakage: function(val) {
             console.log('leakage set to ' + val);
+            settings.leakage = val;
+            setFieldVisibilities();
         },
 
         setInjection: function(val) {
             console.log('injection set to ' + val);
+            settings.injection = val;
+            setFieldVisibilities();
         },
 
         setRecombination: function(val) {
             console.log('recombination set to ' + val);
+            settings.recombination = val;
+            setFieldVisibilities();
         },
 
         setElectrons: function(val) {
             console.log('electrons set to ' + val);
+            settings.electrons = val;
+            setFieldVisibilities();
         },
 
         setHoles: function(val) {
             console.log('holes set to ' + val);
+            settings.holes = val;
+            setFieldVisibilities();
         }
     };
 
