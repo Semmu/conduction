@@ -59,7 +59,7 @@ define(['../util', '../animation_base', '../controls', '../3D'], function(util, 
             Graphics: new PIXI.Graphics(),
 
             getAbsolutePosition: function() {
-                return Grid.Position.scale(Grid.Scale).add(
+                return Grid.Position.add(
                     Sphere.Position.transform(
                         Grid.Axes.x,
                         Grid.Axes.y,
