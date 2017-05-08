@@ -263,9 +263,9 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
     var Field = {
         POSITION: ddd.Vector(0, 50, 0),
         WIDTH: 300,
-        HEIGHT: 200,
+        HEIGHT: 150,
         CENTER_HEIGHT: 0.7,
-        SLOPE_HEIGHT: 0.7,
+        SLOPE_HEIGHT: 0.4,
 
         getPositionAt: function(x, y) {
             return ddd.Vector(x/2 * Field.WIDTH, -y/2 * Field.HEIGHT).add(Field.POSITION);
