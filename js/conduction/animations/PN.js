@@ -80,6 +80,19 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
         return CanvasTexture;
     }
 
+    var Path = function(from, to) {
+        var Path = Drawable();
+
+        Path.from = from;
+        Path.to = to;
+
+        Path.getPointAtT = function(t) {
+            return Path.from.scale(1-t).add(Path.to.scale(t));
+        }
+
+        return Path;
+    }
+
     var Bezier = function(p1, p2, p3, p4, color, cacheLOD, drawLOD) {
         var Bezier = Drawable();
 
@@ -368,73 +381,57 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
     }
     var fieldBottomSlope = FieldBottomSlope();
 
-    var TopInjectionCurve = function() {
-        var TopInjectionCurve = Bezier(Field.getKeyPositionAt(3, 1),
-                                       Field.getKeyPositionAt(2, 1),
-                                       Field.getKeyPositionAt(2, 1),
-                                       Field.getKeyPositionAt(1, 1),
-                                       0x000000, 1000, 30);
+    var TopInjectionPath = function() {
+        var TopInjectionPath = Path(Field.getKeyPositionAt(3, 1),
+                                     Field.getKeyPositionAt(1, 1));
 
-        TopInjectionCurve.updateCPs = function() {
-            TopInjectionCurve.p1 = Field.getKeyPositionAt(3, 1);
-            TopInjectionCurve.p4 = Field.getKeyPositionAt(1, 1);
+        TopInjectionPath.updateCPs = function() {
+            TopInjectionPath.from = Field.getKeyPositionAt(3, 1);
+            TopInjectionPath.to = Field.getKeyPositionAt(1, 1);
         }
 
-        return TopInjectionCurve;
+        return TopInjectionPath;
     }
-    var topInjectionCurve = TopInjectionCurve();
+    var topInjectionPath = TopInjectionPath();
 
-    var BottomInjectionCurve = function() {
-        var BottomInjectionCurve = Bezier(Field.getKeyPositionAt(1, 9),
-                                       Field.getKeyPositionAt(2, 9),
-                                       Field.getKeyPositionAt(2, 9),
-                                       Field.getKeyPositionAt(3, 9),
-                                       0x000000, 1000, 30);
+    var BottomInjectionPath = function() {
+        var BottomInjectionPath = Path(Field.getKeyPositionAt(1, 9),
+                                       Field.getKeyPositionAt(3, 9));
 
-        BottomInjectionCurve.updateCPs = function() {
-            BottomInjectionCurve.p1 = Field.getKeyPositionAt(1, 9);
-            BottomInjectionCurve.p4 = Field.getKeyPositionAt(3, 9);
+        BottomInjectionPath.updateCPs = function() {
+            BottomInjectionPath.from = Field.getKeyPositionAt(1, 9);
+            BottomInjectionPath.to = Field.getKeyPositionAt(3, 9);
         }
 
-        return BottomInjectionCurve;
+        return BottomInjectionPath;
     }
-    var bottomInjectionCurve = BottomInjectionCurve();
+    var bottomInjectionPath = BottomInjectionPath();
 
-    var LeftRecombinationCurve = function() {
-        var LeftRecombinationCurve = Bezier(Field.getKeyPositionAt(1, 1),
-                                            Field.getKeyPositionAt(1, 2),
-                                            Field.getKeyPositionAt(1, 2),
-                                            Field.getKeyPositionAt(1, 7),
-                                            0x000000, 1000, 30);
+    var LeftRecombinationPath = function() {
+        var LeftRecombinationPath = Path(Field.getKeyPositionAt(1, 1),
+                                         Field.getKeyPositionAt(1, 7));
 
-        LeftRecombinationCurve.updateCPs = function() {
-            LeftRecombinationCurve.p1 = Field.getKeyPositionAt(1, 1);
-            LeftRecombinationCurve.p2 = Field.getKeyPositionAt(1, 2);
-            LeftRecombinationCurve.p3 = Field.getKeyPositionAt(1, 2);
-            LeftRecombinationCurve.p4 = Field.getKeyPositionAt(1, 7);
+        LeftRecombinationPath.updateCPs = function() {
+            LeftRecombinationPath.from = Field.getKeyPositionAt(1, 1);
+            LeftRecombinationPath.to = Field.getKeyPositionAt(1, 7);
         }
 
-        return LeftRecombinationCurve;
+        return LeftRecombinationPath;
     }
-    var leftRecombinationCurve = LeftRecombinationCurve();
+    var leftRecombinationPath = LeftRecombinationPath();
 
-    var RightRecombinationCurve = function() {
-        var RightRecombinationCurve = Bezier(Field.getKeyPositionAt(3, 3),
-                                            Field.getKeyPositionAt(3, 8),
-                                            Field.getKeyPositionAt(3, 8),
-                                            Field.getKeyPositionAt(3, 9),
-                                            0x000000, 1000, 30);
+    var RightRecombinationPath = function() {
+        var RightRecombinationPath = Path(Field.getKeyPositionAt(3, 3),
+                                          Field.getKeyPositionAt(3, 9));
 
-        RightRecombinationCurve.updateCPs = function() {
-            RightRecombinationCurve.p1 = Field.getKeyPositionAt(3, 3);
-            RightRecombinationCurve.p2 = Field.getKeyPositionAt(3, 8);
-            RightRecombinationCurve.p3 = Field.getKeyPositionAt(3, 8);
-            RightRecombinationCurve.p4 = Field.getKeyPositionAt(3, 9);
+        RightRecombinationPath.updateCPs = function() {
+            RightRecombinationPath.from = Field.getKeyPositionAt(3, 3);
+            RightRecombinationPath.to = Field.getKeyPositionAt(3, 9);
         }
 
-        return RightRecombinationCurve;
+        return RightRecombinationPath;
     }
-    var rightRecombinationCurve = RightRecombinationCurve();
+    var rightRecombinationPath = RightRecombinationPath();
 
     var CanvasRect = function() {
         var CanvasRect = Drawable();
@@ -697,7 +694,7 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
     var topLeakage = TopLeakage();
 
     var TopInjection = function() {
-        var TopInjection = ParticleField(topInjectionCurve);
+        var TopInjection = ParticleField(topInjectionPath);
 
         TopInjection.spawn = function() {
             return ElectronInField(ddd.Vector(0, (Field.getKeyPositionAt(0, 0).y - Field.getKeyPositionAt(0, 1).y) * Math.pow(Math.random(), 2.5), 0));
@@ -708,7 +705,7 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
     var topInjection = TopInjection();
 
     var BottomInjection = function() {
-        var BottomInjection = ParticleField(bottomInjectionCurve);
+        var BottomInjection = ParticleField(bottomInjectionPath);
 
         BottomInjection.spawn = function() {
             return HoleInField(ddd.Vector(0, (Field.getKeyPositionAt(0, 10).y - Field.getKeyPositionAt(0, 9).y) * Math.pow(Math.random(), 2.5), 0));
@@ -730,7 +727,7 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
     var bottomLeakage = BottomLeakage();
 
     var LeftRecombination = function() {
-        var LeftRecombination = ParticleField(leftRecombinationCurve);
+        var LeftRecombination = ParticleField(leftRecombinationPath);
 
         LeftRecombination.spawn = function() {
             return ElectronInField(ddd.Vector(-1 * (Field.getKeyPositionAt(1, 0).x - Field.getKeyPositionAt(0, 0).x) * Math.pow(Math.random(), 2.5), 0, 0));
@@ -741,7 +738,7 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
     var leftRecombination = LeftRecombination();
 
     var RightRecombination = function() {
-        var RightRecombination = ParticleField(rightRecombinationCurve);
+        var RightRecombination = ParticleField(rightRecombinationPath);
 
         RightRecombination.spawn = function() {
             return ElectronInField(ddd.Vector((Field.getKeyPositionAt(4, 0).x - Field.getKeyPositionAt(3, 0).x) * Math.pow(Math.random(), 2.5), 0, 0));
@@ -754,20 +751,28 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
     var callbacks = {
         setVoltage: function(val) {
             settings.voltage = val;
+
+            // top diagram
             diodeRects.draw();
             fieldLines.draw();
+
+            // beziers
             fieldTopSlope.updateCPs();
             fieldTopSlope.draw();
             fieldBottomSlope.updateCPs();
             fieldBottomSlope.draw();
-            topInjectionCurve.updateCPs();
-            topInjectionCurve.calculateCache();
-            bottomInjectionCurve.updateCPs();
-            bottomInjectionCurve.calculateCache();
-            leftRecombinationCurve.updateCPs();
-            leftRecombinationCurve.calculateCache();
-            rightRecombinationCurve.updateCPs();
-            rightRecombinationCurve.calculateCache();
+
+            // moving particle field updates
+            topInjectionPath.updateCPs();
+            bottomInjectionPath.updateCPs();
+            leftRecombinationPath.updateCPs();
+            rightRecombinationPath.updateCPs();
+
+            // repopulate for correct particle offsets
+            leftRecombination.populate(500);
+            rightRecombination.populate(500);
+
+            // canvases
             topLeftCanvas.updateMetrics();
             topLeftCanvas.draw();
             topRightCanvas.updateMetrics();
@@ -776,8 +781,6 @@ define(['../animation_base', '../controls', '../3D'], function(animation, contro
             bottomLeftCanvas.draw();
             bottomRightCanvas.updateMetrics();
             bottomRightCanvas.draw();
-            leftRecombination.populate(500);
-            rightRecombination.populate(500);
         },
 
         setLeakage: function(val) {
