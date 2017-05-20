@@ -21,16 +21,31 @@
         ];
     </script>
 
+    <script>
+        function toggleControlPanel() {
+            $('#animation_wrapper').toggleClass('uk-hidden-small');
+            $('#control_panel_wrapper').toggleClass('uk-hidden-small');
+            $(window).trigger('resize');
+        }
+    </script>
+
 </head>
 <body class="uk-height-viewport">
 
 <div class="uk-grid uk-grid-collapse uk-height-1-1">
-    <div class="uk-width-1-1 uk-width-small-1-2 uk-width-medium-2-3 uk-width-large-3-4 uk-height-1-1">
+    <div class="uk-width-1-1 uk-width-small-1-1 uk-width-medium-2-3 uk-width-large-3-4 uk-height-1-1 uk-hidden-small uk-position-relative" id="animation_wrapper">
+        <div class="uk-width-1-1 uk-position-absolute uk-visible-small">
+            <div class="uk-margin-left uk-margin-right">
+                <button class="uk-button uk-button-primary uk-width-1-1 uk-margin-top" onclick="toggleControlPanel()">
+                    Switch to control panel
+                </button>
+            </div>
+        </div>
         <div id="animation_container" class="uk-height-1-1 uk-vertical-align">
         </div>
     </div>
 
-    <div class="uk-width-1-1 uk-width-small-1-2 uk-width-medium-1-3 uk-width-large-1-4 uk-height-1-1 uk-position-relative">
+    <div class="uk-width-1-1 uk-width-small-1-1 uk-width-medium-1-3 uk-width-large-1-4 uk-position-relative" id="control_panel_wrapper">
         <div class="uk-vertical-align uk-height-1-1">
             <div class="uk-vertical-align-middle uk-width-1-1" id="settings_container">
                 <div class="uk-margin-left uk-margin-right">
@@ -40,8 +55,11 @@
                 </div>
             </div>
         </div>
-        <div id="animation_select_container" class="uk-width-1-1">
+        <div id="animation_select_container" class="uk-width-1-1 uk-position-absolute">
             <div class="uk-margin-right uk-margin-left">
+                <button class="uk-button uk-button-primary uk-width-1-1 uk-margin-bottom uk-margin-top uk-visible-small" onclick="toggleControlPanel()">
+                    Switch to animation
+                </button>
                 <form class="uk-form uk-width-1-1">
                     <select name="animation_select" id="animation_select" class="uk-width-1-1" autofocus></select>
                 </form>

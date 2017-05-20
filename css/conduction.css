@@ -1,6 +1,6 @@
 body { background: #eee; }
 
-#animation_select_container { position: absolute; top: 10px; }
+#animation_select_container { position: absolute; top: 0px; }
 
 #animation_description { white-space: pre-line; }
 
